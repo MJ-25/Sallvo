@@ -15,29 +15,37 @@ public class SalvoApplication {
 		SpringApplication.run(SalvoApplication.class, args);
 	}
 
-/*	@Bean
-	public CommandLineRunner initData(PlayerRepository playerRepository) {
+	@Bean
+	public CommandLineRunner initData(PlayerRepository playerRepository, GameRepository gameRepository, GamePlayerRepository gamePlayerRepository) {
 		return (args) -> {
 			// save a couple of players
-			playerRepository.save(new Player("j.bauer@ctu.gov"));
-			playerRepository.save(new Player("c.obrian@ctu.gov"));
-			playerRepository.save(new Player("kim_bauer@gmail.com"));
-			playerRepository.save(new Player("t.almeida@ctu.gov"));
-		};
-	}*/
+			Player player1 = new Player("j.bauer@ctu.gov");
+			Player player2 = new Player("c.obrian@ctu.gov");
+			Player player3 = new Player("kim_bauer@gmail.com");
+			Player player4 = new Player("t.almeida@ctu.gov");
+			playerRepository.save(player1);
+			playerRepository.save(player2);
+			playerRepository.save(player3);
+			playerRepository.save(player4);
 
-	@Bean
-	public CommandLineRunner initData(GameRepository gameRepository) {
-		return (args) -> {
+
 			Date date = new Date();
 			Date unaHoraMas = Date.from(date.toInstant().plusSeconds(3600));
 			Date dosHoraMas = Date.from(date.toInstant().plusSeconds(7200));
+			Game game1 = new Game(date);
+			Game game2 = new Game(unaHoraMas);
+			Game game3 = new Game(dosHoraMas);
 
+			gameRepository.save(game1);
+			gameRepository.save(game2);
+			gameRepository.save(game3);
 
-			gameRepository.save(new Game ());
-			gameRepository.save(new Game (unaHoraMas));
-			gameRepository.save(new Game (dosHoraMas));
+			gamePlayerRepository.save(new GamePlayer(player1, game1));
+			gamePlayerRepository.save(new GamePlayer(player2, game1));
+			gamePlayerRepository.save(new GamePlayer(player1, game2));
+			gamePlayerRepository.save(new GamePlayer(player2, game2));
 		};
 	}
-
 }
+
+

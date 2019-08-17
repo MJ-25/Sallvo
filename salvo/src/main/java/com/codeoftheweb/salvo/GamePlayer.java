@@ -1,4 +1,5 @@
 package com.codeoftheweb.salvo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.GenericGenerator;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -15,20 +16,22 @@ public class GamePlayer {
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
     @GenericGenerator(name = "native", strategy = "native")
     private long id;
-    private Date gameTime;
+
+    private Date joinTime;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="player_id")
     private Player player;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name="game_id")
+    @JoinColumn(name="game_id")//Agregar columna con este nombre
     private Game game;
 
     public GamePlayer() {
     }
 
     public GamePlayer(Player player, Game game) {
+        this.joinTime = new Date();
         this.player = player;
         this.game = game;
     }
@@ -37,14 +40,15 @@ public class GamePlayer {
         return id;
     }
 
-    public Date getGameTime() {
-        return this.gameTime;
+    public Date getjoinTime() {
+        return this.joinTime;
     }
 
+    //@JsonIgnore
     public Player getPlayer() {
         return this.player;
     }
-
+    //@JsonIgnore
     public Game getGame() {
         return this.game;
     }
@@ -56,4 +60,6 @@ public class GamePlayer {
     public void setGame(Game game) {
         this.game = game;
     }
+
+
 }

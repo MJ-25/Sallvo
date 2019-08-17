@@ -3,6 +3,7 @@ import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 
@@ -15,7 +16,7 @@ public class Player {
     private String userName;
 
     @OneToMany(mappedBy="player", fetch=FetchType.EAGER)
-    private List<GamePlayer> gamePlayers;
+    Set<GamePlayer> gamePlayers;
 
     public Player() {
     }
@@ -30,5 +31,13 @@ public class Player {
 
     public void setUserName(String userName) {
         this.userName = userName;
+    }
+
+    public Set<GamePlayer> getGamePlayers() {
+        return gamePlayers;
+    }
+
+    public void setGamePlayers(Set<GamePlayer> gamePlayers) {
+        this.gamePlayers = gamePlayers;
     }
 }

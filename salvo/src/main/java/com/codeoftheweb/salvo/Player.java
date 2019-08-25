@@ -37,6 +37,8 @@ public class Player {
         return gamePlayers;
     }
 
+    public long getId() { return id; }
+
     public void setGamePlayers(Set<GamePlayer> gamePlayers) {
         this.gamePlayers = gamePlayers;
     }

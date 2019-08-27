@@ -27,6 +27,10 @@ public class GamePlayer {
     @JoinColumn(name="game_id")//Agregar columna con este nombre
     private Game game;
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name="ship_id")
+    private Ship ship;
+
     public GamePlayer() {
     }
 
@@ -35,6 +39,13 @@ public class GamePlayer {
         this.player = player;
         this.game = game;
     }
+
+    /*public GamePlayer(Player player, Game game, Ship ship) {
+        this.joinTime = new Date();
+        this.player = player;
+        this.game = game;
+        this.ship = ship;
+    }*/
 
     public long getId() {
         return id;
@@ -52,6 +63,8 @@ public class GamePlayer {
     public Game getGame() {
         return this.game;
     }
+    //@JsonIgnore
+    public Ship getShip() { return ship; }
 
     public void setPlayer(Player player) {
         this.player = player;

@@ -14,7 +14,7 @@ console.log(json);
 
 
 function listOfGameDates(game){
-return "<li class='list-group-item'> Horario: " + game.created.toLocaleString() + "   Jugadores: "+ game.gamePlayers.map(emails) + "</li>"
+return "<li class='list-group-item'> Horario: " + game.created + "   Jugadores: "+ game.gamePlayers.map(emails) + "</li>"
 }
 
 function emails (cosa){

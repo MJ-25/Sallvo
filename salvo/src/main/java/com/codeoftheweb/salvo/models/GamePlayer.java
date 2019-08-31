@@ -1,14 +1,12 @@
-package com.codeoftheweb.salvo;
+package com.codeoftheweb.salvo.models;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.GenericGenerator;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+
+import javax.persistence.*;
 import java.util.Date;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Set;
 
 @Entity
 public class GamePlayer {
@@ -27,9 +25,8 @@ public class GamePlayer {
     @JoinColumn(name="game_id")//Agregar columna con este nombre
     private Game game;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name="ship_id")
-    private Ship ship;
+    @OneToMany(mappedBy="gamePlayer", fetch=FetchType.EAGER)
+    private Set<Ship> ships;
 
     public GamePlayer() {
     }
@@ -55,16 +52,15 @@ public class GamePlayer {
         return this.joinTime;
     }
 
-    //@JsonIgnore
+    @JsonIgnore
     public Player getPlayer() {
         return this.player;
     }
-    //@JsonIgnore
+    @JsonIgnore
     public Game getGame() {
         return this.game;
     }
-    //@JsonIgnore
-    public Ship getShip() { return ship; }
+
 
     public void setPlayer(Player player) {
         this.player = player;
@@ -74,5 +70,16 @@ public class GamePlayer {
         this.game = game;
     }
 
+    @JsonIgnore
+    public Set<Ship> getShips() { return ships; }
+
+    public void setShips(Set<Ship> ships) { this.ships = ships; }
+
+    public Map<String,Object> makeGamePlayerDTO(){
+        Map<String, Object> dto = new LinkedHashMap<>();
+        dto.put("id", this.getId());
+        dto.put("player", this.getPlayer());
+        return dto;
+    }
 
 }

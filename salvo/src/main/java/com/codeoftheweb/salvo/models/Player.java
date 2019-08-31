@@ -1,39 +1,42 @@
-package com.codeoftheweb.salvo;
+package com.codeoftheweb.salvo.models;
 import org.hibernate.annotations.GenericGenerator;
+
 import javax.persistence.*;
-import java.util.Date;
 import java.util.Set;
 
 @Entity
 
-public class Game {
+public class Player {
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
     @GenericGenerator(name = "native", strategy = "native")
     private long id;
-    private Date gameTime;
+    private String userName;
 
-    @OneToMany(mappedBy="game", fetch=FetchType.EAGER)
+    @OneToMany(mappedBy="player", fetch=FetchType.EAGER)
     Set<GamePlayer> gamePlayers;
 
-    public Game() {
+    public Player() {
     }
 
-    public Game(Date gameTime) {
-        this.gameTime = gameTime;
+    public Player(String userName) {
+        this.userName = userName;
     }
 
-    public long getId() {
-        return id;
+    public String getUserName() {
+        return this.userName;
     }
 
-    public Date getGameTime() {
-        return gameTime;
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     public Set<GamePlayer> getGamePlayers() {
         return gamePlayers;
     }
+
+    public long getId() { return id; }
 
     public void setGamePlayers(Set<GamePlayer> gamePlayers) {
         this.gamePlayers = gamePlayers;

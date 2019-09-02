@@ -1,13 +1,7 @@
 package com.codeoftheweb.salvo;
 
-import com.codeoftheweb.salvo.models.Game;
-import com.codeoftheweb.salvo.models.GamePlayer;
-import com.codeoftheweb.salvo.models.Player;
-import com.codeoftheweb.salvo.models.Ship;
-import com.codeoftheweb.salvo.repositories.GamePlayerRepository;
-import com.codeoftheweb.salvo.repositories.GameRepository;
-import com.codeoftheweb.salvo.repositories.PlayerRepository;
-import com.codeoftheweb.salvo.repositories.ShipRepository;
+import com.codeoftheweb.salvo.models.*;
+import com.codeoftheweb.salvo.repositories.*;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.CommandLineRunner;
@@ -25,7 +19,7 @@ public class SalvoApplication {
 	}
 
 	@Bean
-	public CommandLineRunner initData(PlayerRepository playerRepository, GameRepository gameRepository, GamePlayerRepository gamePlayerRepository, ShipRepository shipRepository) {
+	public CommandLineRunner initData(PlayerRepository playerRepository, GameRepository gameRepository, GamePlayerRepository gamePlayerRepository, ShipRepository shipRepository, SalvoRepository salvoRepository) {
 		return (args) -> {
 			// save a couple of players
 			Player player1 = new Player("j.bauer@ctu.gov");
@@ -87,6 +81,23 @@ public class SalvoApplication {
 			shipRepository.save(ship7);
 			shipRepository.save(ship8);
 			shipRepository.save(ship9);
+
+
+			Salvo salvo1 = new Salvo(1, gamePlayer1,Arrays.asList("B5","C5","F1"));
+			Salvo salvo2 = new Salvo(1, gamePlayer2,Arrays.asList("B4","B5","B6"));
+			Salvo salvo3 = new Salvo(2, gamePlayer1,Arrays.asList("A2","A4","G6"));
+			Salvo salvo4 = new Salvo(2, gamePlayer2,Arrays.asList("E1","H3","A2"));
+			Salvo salvo5 = new Salvo(1, gamePlayer2,Arrays.asList("B4","B5","B6"));
+			Salvo salvo6 = new Salvo(1, gamePlayer2,Arrays.asList("B4","B5","B6"));
+			Salvo salvo7 = new Salvo(1, gamePlayer2,Arrays.asList("B4","B5","B6"));
+			Salvo salvo8 = new Salvo(1, gamePlayer2,Arrays.asList("B4","B5","B6"));
+			Salvo salvo9 = new Salvo(1, gamePlayer2,Arrays.asList("B4","B5","B6"));
+			Salvo salvo10 = new Salvo(1, gamePlayer2,Arrays.asList("B4","B5","B6"));
+
+			salvoRepository.save(salvo1);
+			salvoRepository.save(salvo2);
+			salvoRepository.save(salvo3);
+			salvoRepository.save(salvo4);
 
 		};
 	}

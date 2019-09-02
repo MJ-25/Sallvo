@@ -28,6 +28,9 @@ public class GamePlayer {
     @OneToMany(mappedBy="gamePlayer", fetch=FetchType.EAGER)
     private Set<Ship> ships;
 
+    @OneToMany(mappedBy = "gamePlayer", fetch = FetchType.EAGER)
+    private Set<Salvo> salvoes;
+
     public GamePlayer() {
     }
 
@@ -37,12 +40,6 @@ public class GamePlayer {
         this.game = game;
     }
 
-    /*public GamePlayer(Player player, Game game, Ship ship) {
-        this.joinTime = new Date();
-        this.player = player;
-        this.game = game;
-        this.ship = ship;
-    }*/
 
     public long getId() {
         return id;
@@ -75,6 +72,15 @@ public class GamePlayer {
 
     public void setShips(Set<Ship> ships) { this.ships = ships; }
 
+    @JsonIgnore
+    public Set<Salvo> getSalvoes() {
+        return salvoes;
+    }
+
+    public void setSalvoes(Set<Salvo> salvoes) {
+        this.salvoes = salvoes;
+    }
+
     public Map<String,Object> makeGamePlayerDTO(){
         Map<String, Object> dto = new LinkedHashMap<>();
         dto.put("id", this.getId());
@@ -82,4 +88,10 @@ public class GamePlayer {
         return dto;
     }
 
+    public Map<String,Object> makeGamePlayerDTO2(){
+        Map<String, Object> dto = new LinkedHashMap<>();
+        dto.put("id", this.getId());
+        dto.put("location", this.getSalvoes());
+        return dto;
+    }
 }

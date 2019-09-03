@@ -6,7 +6,7 @@ import com.codeoftheweb.salvo.models.Player;
 import com.codeoftheweb.salvo.models.Ship;
 import com.codeoftheweb.salvo.repositories.GamePlayerRepository;
 import com.codeoftheweb.salvo.repositories.GameRepository;
-import com.sun.tools.javac.code.Scope;
+//import com.sun.tools.javac.code.Scope;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;

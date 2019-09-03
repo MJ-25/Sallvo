@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Entity
 public class GamePlayer {
@@ -88,10 +89,4 @@ public class GamePlayer {
         return dto;
     }
 
-    public Map<String,Object> makeGamePlayerDTO2(){
-        Map<String, Object> dto = new LinkedHashMap<>();
-        dto.put("id", this.getId());
-        dto.put("location", this.getSalvoes());
-        return dto;
-    }
 }

@@ -6,6 +6,7 @@ import javax.persistence.*;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Entity
@@ -16,20 +17,11 @@ public class Salvo {
 private long id;
 private long turn;
 
-    public Map<Object, Object> makeSalvoDTO(){
-        Map<Object, Object> dto = new LinkedHashMap<>();
-        dto.put(this.getTurn(), this.makeTurnDto());
-        return dto;
-    }
-
-    public Map<Object, Object> makeTurnDto(){
-        Map<Object, Object> dto = new LinkedHashMap<>();
-        dto.put(this.getGamePlayer().getGame().getGamePlayers()
-                        .stream()
-                        .map(gamePlayer1 -> gamePlayer1.makeGamePlayerDTO2())
-                        .collect(Collectors.toList())
-                ,this.getSalvoLocations());
-        //dto.put(this.getGamePlayer().getPlayer().getId(),this.getSalvoLocations());
+    public Map<String, Object> makeSalvoDTO(){
+        Map<String, Object> dto = new LinkedHashMap<>();
+        dto.put("turn",this.getTurn());
+        dto.put("player", this.getGamePlayer().getPlayer().getId());
+        dto.put("locations",this.getSalvoLocations());
         return dto;
     }
 

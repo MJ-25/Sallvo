@@ -1,5 +1,5 @@
 package com.codeoftheweb.salvo;
-//import com.sun.javafx.collections.MappingChange;
+import com.sun.javafx.collections.MappingChange;
 import com.codeoftheweb.salvo.models.Game;
 import com.codeoftheweb.salvo.models.GamePlayer;
 import com.codeoftheweb.salvo.models.Player;
@@ -79,9 +79,12 @@ private Map<String,Object> mapaDePlayers(Player n){
                 .map(ship1 -> ship1.makeShipDTO())
                 .collect(Collectors.toList())
         );
-        dto.put("salvoes", gamePlayer.getSalvoes()
+        dto.put("salvoes", gamePlayer.getGame().getGamePlayers()
                 .stream()
-                .map(salvo1 -> salvo1.makeSalvoDTO())
+                //flatMap hace la misma función que map pero pone todos los elementos al mismo nivel (por ejemplo, un array con un solo objeto unido, en lugar de un array de varios objetos)
+                .flatMap(gamePlayer1 -> gamePlayer1.getSalvoes()
+                                                    .stream()
+                                                    .map(salvo -> salvo.makeSalvoDTO()))
                 .collect(Collectors.toList())
         );
 

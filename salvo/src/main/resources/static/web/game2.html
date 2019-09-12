@@ -5,20 +5,42 @@
     <title>Ships locations!</title>
     <link rel="stylesheet" type="text/css" href="game2.css">
 </head>
-<body>
+<body class="container">
 <div>
     <span id="playerInfo"></span>
 </div>
+<div id="tables" class="row">
 <section>
     <h2>Game Board</h2>
-    <table class="tableSalvo" border="1">
+    <table id="tableShip" class="col table-bordered">
+        <thead id="headShip">
+        </thead>
+        <tbody id="bodyShip">
+        </tbody>
+    </table>
+</section>
+<section>
+    <h2>Salvo Board</h2>
+    <table id="tableSalvo" class="col table-bordered">
         <thead id="headSalvo">
         </thead>
         <tbody id="bodySalvo">
         </tbody>
     </table>
 </section>
+</div>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 <script type="text/javascript" src="game2.js"></script>
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+
+<!-- jQuery library -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+<!-- Popper JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+
+<!-- Latest compiled JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 </body>
 </html>

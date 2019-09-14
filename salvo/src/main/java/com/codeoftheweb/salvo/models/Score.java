@@ -6,6 +6,8 @@ import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 @Entity
 public class Score {
@@ -70,4 +72,7 @@ public class Score {
     public void setPlayer(Player player) {
         this.player = player;
     }
+
+
+
 }

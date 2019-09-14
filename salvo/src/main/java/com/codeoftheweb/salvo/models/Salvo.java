@@ -17,14 +17,6 @@ public class Salvo {
 private long id;
 private long turn;
 
-    public Map<String, Object> makeSalvoDTO(){
-        Map<String, Object> dto = new LinkedHashMap<>();
-        dto.put("turn",this.getTurn());
-        dto.put("player", this.getGamePlayer().getPlayer().getId());
-        dto.put("locations",this.getSalvoLocations());
-        return dto;
-    }
-
 @ElementCollection
 @Column(name = "salvoLocation")
 private List <String> salvoLocations;
@@ -68,5 +60,13 @@ private GamePlayer gamePlayer;
 
     public void setGamePlayer(GamePlayer gamePlayer) {
         this.gamePlayer = gamePlayer;
+    }
+
+    public Map<String, Object> makeSalvoDTO(){
+        Map<String, Object> dto = new LinkedHashMap<>();
+        dto.put("turn",getTurn());
+        dto.put("player", getGamePlayer().getPlayer().getId());
+        dto.put("locations",getSalvoLocations());
+        return dto;
     }
 }

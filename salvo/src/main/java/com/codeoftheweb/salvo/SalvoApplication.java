@@ -101,13 +101,19 @@ public class SalvoApplication {
 
 
 			Score score1 = new Score(1,game1,player1);
-			Score score2 = new Score(0.5,game2,player2);
-			Score score3 = new Score(1, game3,player1);
+			Score score2 = new Score(0, game1,player2);
+			Score score3 = new Score(0.5,game2,player1);
+			Score score4 = new Score(0.5,game2,player2);
+			Score score5 = new Score(1, game3,player1);
+			Score score6 = new Score(0, game3,player2);
 
 
 			scoreRepository.save(score1);
 			scoreRepository.save(score2);
 			scoreRepository.save(score3);
+			scoreRepository.save(score4);
+			scoreRepository.save(score5);
+			scoreRepository.save(score6);
 		};
 	}
 }

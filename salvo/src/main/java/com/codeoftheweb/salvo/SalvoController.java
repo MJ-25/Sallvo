@@ -4,6 +4,7 @@ import com.codeoftheweb.salvo.models.*;
 import com.codeoftheweb.salvo.repositories.GamePlayerRepository;
 import com.codeoftheweb.salvo.repositories.GameRepository;
 //import com.sun.tools.javac.code.Scope;
+import com.codeoftheweb.salvo.repositories.PlayerRepository;
 import com.codeoftheweb.salvo.repositories.ScoreRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,7 +25,7 @@ public class SalvoController {
         private GamePlayerRepository gamePlayerRepository;
 
         @Autowired
-        private ScoreRepository scoreRepository;
+        private PlayerRepository playerRepository;
 
 @RequestMapping("/games")//Cuando escriban /api/game me va a dar una lista de objetos llamada "getGameIDDetails" que la va a encontrar en el repo (GameRepository)
 // y va a devolver todos los objetos en forma de stream (para poder usar las funciones propias de un stream, tales como map), los va a mapear aplicando la función mapadeGames y luego los va a coleccionar en una lista
@@ -36,28 +37,28 @@ public class SalvoController {
 private Map<String, Object> mapaDeGames(Game e){
     Map <String, Object> obj = new LinkedHashMap<>();
 //Put in the Object "obj" the following keys (e.g. "id") and values (e.g. "e.getID"). We get the method from the Game class (it's the getter of id)
-    obj.put("id", e.getId());
+    obj.put("id de game", e.getId());
     obj.put("created",e.getGameTime());
     obj.put("gamePlayers",getGamePlayersDetail(e.getGamePlayers()));
 
     return obj;
 }
 
-private Set<Object> getGamePlayersDetail(Set <GamePlayer> o){
-    return o.stream().map(n-> mapaDeGamePlayers(n)).collect(Collectors.toSet());
+private List <Object> getGamePlayersDetail(Set <GamePlayer> o){
+    return o.stream().map(n-> mapaDeGamePlayers(n)).collect(Collectors.toList());
 }
 
 
 private Map <String, Object> mapaDeGamePlayers(GamePlayer n){
     Map <String, Object> obj = new LinkedHashMap<>();
-    obj.put("id", n.getId());
+    obj.put("id de gamePlayer", n.getId());
     obj.put("player", mapaDePlayers(n.getPlayer()));
     return obj;
 }
 
 private Map<String,Object> mapaDePlayers(Player n){
     Map <String, Object> obj = new LinkedHashMap<>();
-    obj.put("id", n.getId());
+    obj.put("id de player", n.getId());
     obj.put("email", n.getUserName());
     return obj;
 }
@@ -93,16 +94,13 @@ private Map<String,Object> mapaDePlayers(Player n){
         return dto;
     }
 
-    @RequestMapping("/leaderboard")
+    @RequestMapping("/leaderBoard")
     public List <Object> getScoreDetails(){
-        return scoreRepository.findAll().stream().map(e -> mapaDeScores(e)).collect(Collectors.toList());
+        return playerRepository.findAll().stream().map(e -> e.makePlayerScoreDTO()).collect(Collectors.toList());
     }
 
-    public Map<String,Object> mapaDeScores(Score e) {
-        Map<String, Object> dto = new LinkedHashMap<>();
-        dto.put("id", e.getId());
-        return dto;
-    }
+
+
 
 
 }

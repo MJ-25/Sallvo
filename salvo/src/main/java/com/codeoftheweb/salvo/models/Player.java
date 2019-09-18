@@ -63,4 +63,49 @@ public class Player {
         dto.put("email", this.getUserName());
         return dto;
     }
+
+    public Map<String,Object> makePlayerScoreDTO() {
+        Map<String, Object> dto = new LinkedHashMap<>();
+        dto.put("id", this.getId());
+        dto.put("email", this.getUserName());
+        dto.put("score", mapaDeScores2());
+        return dto;
+    }
+
+
+    public Map <String, Object> mapaDeScores2() {
+        Map<String, Object> dto = new LinkedHashMap<>();
+        dto.put("won",this.getWins());
+        dto.put("tied",this.getTies());
+        dto.put("lost",this.getLoses());
+        dto.put("total",this.getTotal());
+        dto.put("gamesPlayed",this.getGamesPlayed());
+        return dto;
+    }
+
+
+    public long getWins(){
+        return this.getScores().stream()
+                                .filter(score -> score.getScore() == 1)
+                                .count();
+    }
+
+    public long getTies(){
+        return this.getScores().stream()
+                .filter(score -> score.getScore() == 0.5)
+                .count();
+    }
+    public long getLoses(){
+        return this.getScores().stream()
+                .filter(score -> score.getScore() == 0)
+                .count();
+    }
+    public double getTotal(){
+        return this.getWins() + getTies()*0.5;
+    }
+
+    public long getGamesPlayed(){
+        return this.getWins() + this.getTies() + this.getLoses();
+    }
+
 }

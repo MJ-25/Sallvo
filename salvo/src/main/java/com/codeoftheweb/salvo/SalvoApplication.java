@@ -11,6 +11,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.GlobalAuthenticationConfigurerAdapter;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -142,7 +145,8 @@ class WebSecurityConfiguration extends GlobalAuthenticationConfigurerAdapter {
 	@Override
 	public void init(AuthenticationManagerBuilder auth) throws Exception {
 		auth.userDetailsService(inputName-> {
-			Player player = playerRepository.findByEmail(inputName);
+			System.out.println("aserje");
+			Player player = playerRepository.findByUserName(inputName);
 			if (player != null) {
 				return new User(player.getUserName(), player.getPassword(),
 						AuthorityUtils.createAuthorityList("USER"));
@@ -152,4 +156,25 @@ class WebSecurityConfiguration extends GlobalAuthenticationConfigurerAdapter {
 		});
 	}
 
+}
+
+@Configuration
+@EnableWebSecurity
+class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+	@Override
+	protected void configure(HttpSecurity http) throws Exception {
+		http.authorizeRequests()
+				.antMatchers("/api/game_view/**").hasAuthority("USER")
+				.antMatchers("/web/**").permitAll()
+				.antMatchers("/api/**").permitAll()
+				.antMatchers("/rest/**").denyAll()
+				.anyRequest().permitAll();
+
+		http.formLogin()
+				.usernameParameter("name")
+				.passwordParameter("password")
+				.loginPage("/api/login").permitAll();
+
+		http.logout().logoutUrl("/api/logout").permitAll();
+	}
 }

@@ -7,6 +7,7 @@ import com.codeoftheweb.salvo.repositories.GameRepository;
 import com.codeoftheweb.salvo.repositories.PlayerRepository;
 import com.codeoftheweb.salvo.repositories.ScoreRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,7 +20,7 @@ import java.util.stream.Collectors;
 public class SalvoController {
 
         @Autowired
-        private GameRepository repo;
+        private GameRepository gameRepository;
 
         @Autowired
         private GamePlayerRepository gamePlayerRepository;
@@ -27,12 +28,27 @@ public class SalvoController {
         @Autowired
         private PlayerRepository playerRepository;
 
-@RequestMapping("/games")//Cuando escriban /api/game me va a dar una lista de objetos llamada "getGameIDDetails" que la va a encontrar en el repo (GameRepository)
+@RequestMapping("/games")
+    public Map <String, Object> allTheGames (Authentication authentication){
+    Map <String, Object> dtoDeUser = new LinkedHashMap<>();
+    Player player = playerRepository.findByUserName(authentication.getName()).get();
+    if (authentication.getName()== null){
+        dtoDeUser.put("player", "Guest");
+    }else {
+        dtoDeUser.put("player", player.makePlayerDetail());
+    }
+        dtoDeUser.put("games", gameRepository.findAll().stream().map(game -> mapaDeGames(game)).collect(Collectors.toList()));
+
+return dtoDeUser;
+}
+
+/*
+//Cuando escriban /api/game me va a dar una lista de objetos llamada "getGameIDDetails" que la va a encontrar en el repo (GameRepository)
 // y va a devolver todos los objetos en forma de stream (para poder usar las funciones propias de un stream, tales como map), los va a mapear aplicando la función mapadeGames y luego los va a coleccionar en una lista
     public List <Object> getGameIDDetails(){
     return repo.findAll().stream().map(e -> mapaDeGames(e)).collect(Collectors.toList());
 }
-
+*/
 //En un Map (diferente de la función map) vamos a poner String (los key, por ejemplo "nombre:") y Objetos (por ejemplo "Juan Manuel"). Este Map se llama mapa y toma como parámetro el Game (hay que especificar el tipo de variable) e (viene del map anterior)
 private Map<String, Object> mapaDeGames(Game e){
     Map <String, Object> obj = new LinkedHashMap<>();

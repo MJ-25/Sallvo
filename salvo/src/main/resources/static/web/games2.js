@@ -71,8 +71,9 @@ function login(evt) {
       password: form["password"].value
     })
     .done(function (data) {
-      console.log("successful login!!"),
+      console.log("successful login!!");
         showLogin(false);
+        $("#player").text("Welcome " + form["name"].value + "!");
     })
      .fail(function( jqXHR, textStatus ) {
               alert( "Failed: " + textStatus );
@@ -94,11 +95,14 @@ function logout(evt) {
 
 function showLogin(show) {
   if (show) {
-    $("#login-form").show();
-    //$("#user-panel").hide();
+    $("#login-info").show();
+    $("#login-btn").show();
+    $("#logout-btn").hide();
+    $("#player").hide();
   } else {
     $("#logout-btn").show();
-    $("#login-form").hide();
-    //$("#user-panel").show();
+    $("#login-info").hide();
+    $("#login-btn").hide();
+    $("#player").show();
   }
 }

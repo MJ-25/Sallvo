@@ -12,6 +12,7 @@
 <body>
 <div class="container">
 <form id="login-form" onsubmit="return false">
+    <div id="login-info">
     <div class="input-field col s6">
         <input id="name" type="text" class="validate">
         <label for="name">Name</label>
@@ -21,13 +22,11 @@
         <input id="password" type="password" class="validate">
         <label for="password">Password</label>
     </div>
-    <button id="logout-btn" type="button">Logout</button>
+    </div>
     <button id="login-btn" type="button">Log in</button>
+    <h5 id="player"></h5>
+    <button id="logout-btn" type="button">Log out</button>
 </form>
-
-<!--<form id="login-btn" onsubmit="return false">
-    <button>Log in</button>
-</form>-->
 </div>
 
 <div class="container cyan darken-3">

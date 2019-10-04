@@ -7,6 +7,7 @@ import com.codeoftheweb.salvo.repositories.GameRepository;
 import com.codeoftheweb.salvo.repositories.PlayerRepository;
 import com.codeoftheweb.salvo.repositories.ScoreRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,16 +32,21 @@ public class SalvoController {
 @RequestMapping("/games")
     public Map <String, Object> allTheGames (Authentication authentication){
     Map <String, Object> dtoDeUser = new LinkedHashMap<>();
-    Player player = playerRepository.findByUserName(authentication.getName()).get();
-    if (authentication.getName()== null){
+    if (isGuest(authentication)){
         dtoDeUser.put("player", "Guest");
     }else {
+        Player player = playerRepository.findByUserName(authentication.getName()).get();
         dtoDeUser.put("player", player.makePlayerDetail());
     }
         dtoDeUser.put("games", gameRepository.findAll().stream().map(game -> mapaDeGames(game)).collect(Collectors.toList()));
 
 return dtoDeUser;
 }
+
+    private boolean isGuest(Authentication authentication) {
+        return authentication == null || authentication instanceof AnonymousAuthenticationToken;
+    }
+
 
 /*
 //Cuando escriban /api/game me va a dar una lista de objetos llamada "getGameIDDetails" que la va a encontrar en el repo (GameRepository)
@@ -116,6 +122,9 @@ private Map<String,Object> mapaDePlayers(Player n){
     }
 
 
+
+    @RequestMapping("/players")
+    public
 
 
 

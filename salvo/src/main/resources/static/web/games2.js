@@ -16,7 +16,7 @@ fetch("/api/games").then(function (response) {
       return response.json();
     }
   }).then(function (json) {
-    document.getElementById("lista").innerHTML = json.map(listOfGameDates).join("");
+    document.getElementById("lista").innerHTML = json.games.map(listOfGameDates).join("");
     console.log(json);
 
 

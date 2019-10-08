@@ -1,4 +1,4 @@
-package com.codeoftheweb.salvo;
+package com.codeoftheweb.salvo.controllers;
 //import com.sun.javafx.collections.MappingChange;
 import com.codeoftheweb.salvo.models.*;
 import com.codeoftheweb.salvo.repositories.GamePlayerRepository;
@@ -120,11 +120,6 @@ private Map<String,Object> mapaDePlayers(Player n){
     public List <Object> getScoreDetails(){
         return playerRepository.findAll().stream().map(e -> e.makePlayerScoreDTO()).collect(Collectors.toList());
     }
-
-
-
-    @RequestMapping("/players")
-    public
 
 
 

@@ -169,6 +169,7 @@ class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	protected void configure(HttpSecurity http) throws Exception {
 		http.authorizeRequests()
 				.antMatchers("/api/game_view/**").hasAuthority("USER")
+				//** para las carpetas. * para los archivos. Son excluyentes
 				.antMatchers("/web/**").permitAll()
 				.antMatchers("/api/**").permitAll()
 				.antMatchers("/rest/**").denyAll()

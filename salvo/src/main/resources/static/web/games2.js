@@ -4,13 +4,19 @@ $(function () {
   $("#login-btn").click(function () {
     login(event);
   });
+   $("#signin-btn").click(function () {
+        signin(event);
+      });
   $("#logout-btn").click(function () {
     logout(event);
   });
+  chequearUsuario();
 });
 
-
+var error = "";
+var usuario;
 //Obtener Json desde /api/games y colocarlo en e html
+function loadData (){
 fetch("/api/games").then(function (response) {
     if (response.ok) {
       return response.json();
@@ -18,12 +24,15 @@ fetch("/api/games").then(function (response) {
   }).then(function (json) {
     document.getElementById("lista").innerHTML = json.games.map(listOfGameDates).join("");
     console.log(json);
+    usuario = json.player.email;
+    console.log(usuario);
 
 
   })
   .catch(function (error) {
     console.log("Request failed: " + error.message);
   });
+  }
 
 //Crear la lista para poner en el html
 function listOfGameDates(game) {
@@ -43,7 +52,9 @@ fetch("/api/leaderBoard").then(function (response) {
   }).then(function (json) {
     document.getElementById("bodyLeaderBoard").innerHTML = json.map(tableBody).join("");
     console.log(json);
-
+    $("#blankField").hide();
+    $("#wrongInfo").hide();
+    $("#usedUser").hide();
 
   })
   .catch(function (error) {
@@ -73,13 +84,53 @@ function login(evt) {
     .done(function (data) {
       console.log("successful login!!");
         showLogin(false);
-        $("#player").text("Welcome " + form["name"].value + "!");
-    })
+        loadData();
+        console.log(usuario);
+        $("#player").text("Welcome " + usuario + "!");
+     })
      .fail(function( jqXHR, textStatus ) {
-              alert( "Failed: " + textStatus );
-            });
+        error = jqXHR.status;
+        alert( "Failed: " + error );
+        //Terminar de poner los otros errores
+        if (error == 401){
+           $("#wrongInfo").show();
+        }
+        });
     };
 
+
+function signin (evt){
+evt.preventDefault();
+  var form = evt.target.form;
+  console.log(form)
+  $.post("/api/players", {
+  email: form["name"].value,
+  password: form["password"].value
+  })
+  .done(function (data) {
+        console.log("successful sign in!!");
+         $.post("/api/login", {
+              name: form["name"].value,
+              password: form["password"].value
+            })
+            .done(function (data) {
+                  console.log("successful login!!");
+                    showLogin(false);
+                    $("#player").text("Welcome " + form["name"].value + "!");
+                })
+      })
+       .fail(function( jqXHR, textStatus ) {
+                alert( "Failed: " + jqXHR.text );
+              });
+ };
+
+
+ function chequearUsuario (){
+ if (usuario != undefined){
+    showLogin(false);
+    $("#player").text("Welcome " + usuario + "!");
+ }
+ }
 
 function logout(evt) {
   evt.preventDefault();
@@ -97,12 +148,17 @@ function showLogin(show) {
   if (show) {
     $("#login-info").show();
     $("#login-btn").show();
+    $("#signin-btn").show();
     $("#logout-btn").hide();
     $("#player").hide();
   } else {
     $("#logout-btn").show();
     $("#login-info").hide();
+    $("#signin-btn").hide();
     $("#login-btn").hide();
     $("#player").show();
+    $("#blankField").hide();
+    $("#wrongInfo").hide();
+    $("#usedUser").hide();
   }
 }

@@ -1,5 +1,4 @@
 $(function () {
-
   $("#logout-btn").hide();
   $("#login-btn").click(function () {
     login(event);
@@ -10,11 +9,12 @@ $(function () {
   $("#logout-btn").click(function () {
     logout(event);
   });
-  chequearUsuario();
+     loadData();
+
 });
 
 var error = "";
-var usuario;
+
 //Obtener Json desde /api/games y colocarlo en e html
 function loadData (){
 fetch("/api/games").then(function (response) {
@@ -24,10 +24,7 @@ fetch("/api/games").then(function (response) {
   }).then(function (json) {
     document.getElementById("lista").innerHTML = json.games.map(listOfGameDates).join("");
     console.log(json);
-    usuario = json.player.email;
-    console.log(usuario);
-
-
+    chequearUsuario(json.player.email);
   })
   .catch(function (error) {
     console.log("Request failed: " + error.message);
@@ -73,6 +70,7 @@ function tableBody(e) {
     "</td></tr>";
 }
 
+//Función para hacer log in
 function login(evt) {
   evt.preventDefault();
   var form = evt.target.form;
@@ -82,23 +80,21 @@ function login(evt) {
       password: form["password"].value
     })
     .done(function (data) {
-      console.log("successful login!!");
+        console.log("successful login!!");
         showLogin(false);
         loadData();
-        console.log(usuario);
-        $("#player").text("Welcome " + usuario + "!");
      })
      .fail(function( jqXHR, textStatus ) {
         error = jqXHR.status;
-        alert( "Failed: " + error );
-        //Terminar de poner los otros errores
         if (error == 401){
            $("#wrongInfo").show();
+           $("#usedUser").hide();
+           $("#blankField").hide();
         }
         });
     };
 
-
+//Función para hacer sign in
 function signin (evt){
 evt.preventDefault();
   var form = evt.target.form;
@@ -116,22 +112,35 @@ evt.preventDefault();
             .done(function (data) {
                   console.log("successful login!!");
                     showLogin(false);
-                    $("#player").text("Welcome " + form["name"].value + "!");
+                    loadData();
                 })
       })
        .fail(function( jqXHR, textStatus ) {
-                alert( "Failed: " + jqXHR.text );
+                alert( "Failed: " + jqXHR.status );
+
+                error = jqXHR.status;
+                        if (error == 400){
+                           $("#blankField").show();
+                           $("#wrongInfo").hide();
+                            $("#usedUser").hide();
+                        };
+                        if (error == 403){
+                           $("#usedUser").show();
+                           $("#blankField").hide();
+                           $("#wrongInfo").hide();
+                        };
               });
  };
 
-
- function chequearUsuario (){
+//Función para que cuando actualice la página no vuelva a aparecer el log in si el usuario ya está loggeado
+ function chequearUsuario (usuario){
  if (usuario != undefined){
     showLogin(false);
     $("#player").text("Welcome " + usuario + "!");
  }
  }
 
+//Función para hacer log out
 function logout(evt) {
   evt.preventDefault();
   $.post("/api/logout")
@@ -144,6 +153,7 @@ function logout(evt) {
                      });
 }
 
+//Función para que una vez hecho el log in desaparezca el form para hacer log in y aparezca el de log out
 function showLogin(show) {
   if (show) {
     $("#login-info").show();

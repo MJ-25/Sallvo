@@ -1,5 +1,9 @@
 $(function() {
     loadData();
+    loadData2();
+    $("#logout-btn").click(function () {
+        logout(event);
+      });
 });
 
 var horizontal = [1,2,3,4,5,6,7,8,9,10];
@@ -103,3 +107,38 @@ function loadData(){
           alert( "Failed: " + textStatus );
         });
 };
+
+function loadData2 (){
+fetch("/api/games").then(function (response) {
+    if (response.ok) {
+      return response.json();
+    }
+  }).then(function (json) {
+    console.log(json);
+    chequearUsuario(json.player.email);
+  })
+  .catch(function (error) {
+    console.log("Request failed: " + error.status);
+  });
+  }
+
+  //Función para que cuando actualice la página no vuelva a aparecer el log in si el usuario ya está loggeado
+   function chequearUsuario (usuario){
+   if (usuario != undefined){
+      $("#player").text("Username: " + usuario);
+   }
+   }
+
+   //Función para hacer log out
+   function logout(evt) {
+     evt.preventDefault();
+     $.post("/api/logout")
+     .done(function (data) {
+           console.log("successful logout!!")
+           //Redirecciona a la página principal luego de hacer log out
+           window.location.replace("http://localhost:8080/web/games2.html");
+         })
+      .fail(function( jqXHR, textStatus ) {
+                          alert( "Failed: " + textStatus );
+                        });
+   }

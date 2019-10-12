@@ -25,7 +25,7 @@ public class PlayerController {
             @RequestParam String email, @RequestParam String password) {
 
         if (email.isEmpty() || password.isEmpty()) {
-            return new ResponseEntity<>("Missing data", HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>("Missing data", HttpStatus.BAD_REQUEST);
         }
 
         if (playerRepository.findByUserName(email).orElse(null) !=  null) {

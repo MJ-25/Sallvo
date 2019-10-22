@@ -7,10 +7,13 @@ import com.codeoftheweb.salvo.repositories.GameRepository;
 import com.codeoftheweb.salvo.repositories.PlayerRepository;
 import com.codeoftheweb.salvo.repositories.ScoreRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.*;
@@ -121,6 +124,75 @@ private Map<String,Object> mapaDePlayers(Player n){
         return playerRepository.findAll().stream().map(e -> e.makePlayerScoreDTO()).collect(Collectors.toList());
     }
 
+    //Create new game in /api/games by using method post
+    @RequestMapping(path= "/games", method = RequestMethod.POST)
+    //ResponseEntity for it to return error whenever it's not possible. Authentication is the nfo from log in
+    public ResponseEntity<Map<String, Object>> createGame (Authentication authentication){
+    //If authentication is a guest (i.e. it's null), return an error message saying that you must log in
+        if(isGuest(authentication)){
+            return new ResponseEntity<>(createMap("error","You must log in!"), HttpStatus.FORBIDDEN);
+    //If that is not the case, create a new Game (named newGame) with a parameter of Date and save it in the gameRepository.
+    //Then create a new Player named newPlayer. Assign the value of the player in playerRepository that has the name of authentication
+    //Then create a new GamePlayer named newGamePlayer with the parameters od player and game. Save it.
+    //Once that is done, return a ResponseEntity with a key "gpid" (gamePlayerID) and a value of the ID + the HttpStatus of 201, created
+        }else{
+            Game newGame = new Game(new Date());
+            gameRepository.save(newGame);
+            Player newPlayer = playerRepository.findByUserName(authentication.getName()).get();
+            GamePlayer newGamePlayer = new GamePlayer(newPlayer, newGame);
+            gamePlayerRepository.save(newGamePlayer);
+            return new ResponseEntity<>(createMap("gpid", newGamePlayer.getId()), HttpStatus.CREATED);
+        }
+    }
+
+    //Join a new game by using the method post
+    @RequestMapping(path= "/games/{id}/players", method = RequestMethod.POST)
+    //PathVariable to pass the {id} as a parameter
+    public ResponseEntity<Map<String, Object>> createGame (Authentication authentication,
+                                                           @PathVariable Long id){
+        //Check if authentication is a guest (i.e. null). The function is already declared in the controller. If that is the case, return an error (You must log in)
+        if(isGuest(authentication)){
+            return new ResponseEntity<>(createMap("error","You must log in!"), HttpStatus.FORBIDDEN);
+        }
+        //The return finishes the "if" so you can create a new one.
+        //Create a new game named newJoinGame. Assign the value of the game in gameRepository that has the same id as the one passed by parameter {id}. If you can't find the game, assign thee value "null"
+        Game newJoinGame = gameRepository.findById(id).orElse(null);
+        //If newJoinGame is null (i.e. the id passed by parameter doesn't exist in the repository), return an error that tells you that the game you're looking for, doesn't exist
+        if(newJoinGame == null){
+            return new ResponseEntity<>(createMap("error","Game doesn't exist"), HttpStatus.FORBIDDEN);
+        }
+        //If the size of the list of gamePlayers of newJoinGame is larger or equal than 2, return an error that tells you that the game is full. You can't join it
+        if(newJoinGame.getGamePlayers().size() >= 2){
+            return new ResponseEntity<>(createMap("error","Game is full"), HttpStatus.FORBIDDEN);
+        }
+        //Create a new Player named newJoinPlayer. Assign the value of the player in repository that has the same name as the name in authentication
+        Player newJoinPlayer = playerRepository.findByUserName(authentication.getName()).get();
+        //If the gamePlayers of newJoinGame contain any of the players of newJoinGame (i.e. Each game can have up to 2 gamePlayers.
+        // You need to check if the userName of the new player that wants to join the game(newJoinGame) is already a participant (gamePlayer.getPlayer().getUserName() of that game. Meaning, you are already playing that game. You can't play against yourself)
+        if(newJoinGame.getGamePlayers()
+                .stream()
+                .map(gamePlayer -> gamePlayer.getPlayer().getUserName())
+                .collect(Collectors.toList())
+                .contains(newJoinPlayer.getUserName())
+        ){
+            return new ResponseEntity<>(createMap("error","You're already a player in this game"), HttpStatus.FORBIDDEN);
+        }
+        //Create a new GamePlayer (newJoinGamePlayer). Assign by parameters the values of newJoinPlayer and newJoinGame. Save it.
+        GamePlayer newJoinGamePlayer = new GamePlayer(newJoinPlayer, newJoinGame);
+        gamePlayerRepository.save(newJoinGamePlayer);
+        //If the post is correct (i.e. you have been able to join a new gamePlayer to a game), show the gamePlayer id (gpid) and the HttpStatus 201 CREATED
+        return new ResponseEntity<>(createMap("gpid", newJoinGamePlayer.getId()), HttpStatus.CREATED);
+    }
+
+
+
+
+    //Map to be able to put a String and an Object inside the ResponseEntity
+    public Map<String, Object> createMap (String str, Object obj){
+        Map<String, Object> map = new LinkedHashMap<>();
+        map.put(str, obj);
+        return map;
+    }
 
 
 }

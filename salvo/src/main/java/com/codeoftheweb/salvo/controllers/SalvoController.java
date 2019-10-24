@@ -83,7 +83,7 @@ private Map <String, Object> mapaDeGamePlayers(GamePlayer n){
 
 private Map<String,Object> mapaDePlayers(Player n){
     Map <String, Object> obj = new LinkedHashMap<>();
-    obj.put("id de player", n.getId());
+    obj.put("idPlayer", n.getId());
     obj.put("email", n.getUserName());
     return obj;
 }

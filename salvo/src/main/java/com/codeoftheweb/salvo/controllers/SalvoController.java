@@ -76,7 +76,7 @@ private List <Object> getGamePlayersDetail(Set <GamePlayer> o){
 
 private Map <String, Object> mapaDeGamePlayers(GamePlayer n){
     Map <String, Object> obj = new LinkedHashMap<>();
-    obj.put("id de gamePlayer", n.getId());
+    obj.put("idGamePlayer", n.getId());
     obj.put("player", mapaDePlayers(n.getPlayer()));
     return obj;
 }

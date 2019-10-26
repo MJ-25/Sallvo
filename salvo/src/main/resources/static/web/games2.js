@@ -15,17 +15,21 @@ $(function () {
 
 var error = "";
 var playerId = "";
+var gamePlayers = "";
 
-//Obtener Json desde /api/games y colocarlo en e html
+
+//Obtener Json desde /api/games y colocarlo en el html
 function loadData (){
 fetch("/api/games").then(function (response) {
     if (response.ok) {
       return response.json();
     }
   }).then(function (json) {
+  //Id de player loggeado
     playerId = json.player.Id;
+    //Crea un botón para cada uno de los juegos en que un jugador se puede unir al juego
+    gamePlayers = json.games.map(createButtonJoinGame);
     document.getElementById("lista").innerHTML = json.games.map(listOfGameDates).join("");
-    console.log(json);
     chequearUsuario(json.player.email);
     })
   .catch(function (error) {
@@ -34,23 +38,30 @@ fetch("/api/games").then(function (response) {
   }
 
 
-var listGamePlayers = [];
 var idsDeGamePlayers = [];
+var buttonJoinGame = "";
+
+
+
+function createButtonJoinGame (game){
+console.log(game.gamePlayers[0].player.idPlayer);
+if(game.gamePlayers[0].player.idPlayer == playerId){
+console.log("yes");
+buttonJoinGame = "<a id='joinGameButton' href= 'http://localhost:8080/web/game2.html?gp="+ game.gamePlayers[0].idGamePlayer +"'>Join Game! </a>";
+//$("#joinGameButton").show();
+}/*else if(game.gamePlayers[1].player.idPlayer == playerId){
+buttonJoinGame = "<a id='joinGameButton' href= 'http://localhost:8080/web/game2.html?gp="+ game.gamePlayers[1].idGamePlayer +"'>Join Game! </a>";
+}*/
+else{
+console.log("no");
+//$("#joinGameButton").hide();
+//buttonJoinGame = "";
+}}
+
 
 //Crear la lista para poner en el html
 function listOfGameDates(game) {
-
-    //Todos los gamePlayers del game (e.g. gamePlayer1 y gamePlayer2)
-    listGamePlayers = game.gamePlayers;
-    //Solo los id de los gamePlayers
-    idsDeGamePlayers = listGamePlayers.map(e => e.player.idPlayer);
-    if (idsDeGamePlayers.includes(playerId)){
-    console.log("yes");
-    } else {
-    console.log("no");
-    }
-
-  return "<li class='collection-item deep-orange darken-3'> Horario: " + game.created + "   Jugadores: " + game.gamePlayers.map(emails) + "<a href= 'http://localhost:8080/web/game2.html?gp="+ 2 +"'>Join Game! </a>" +"</li>"
+  return "<li class='collection-item deep-orange darken-3'> Horario: " + game.created + "   Jugadores: " + game.gamePlayers.map(emails) + buttonJoinGame + "</li>";
 }
 
 function emails(e) {

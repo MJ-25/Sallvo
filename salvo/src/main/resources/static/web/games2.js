@@ -16,6 +16,7 @@ $(function () {
 var error = "";
 var playerId = "";
 var gamePlayers = "";
+var jason = "";
 
 
 //Obtener Json desde /api/games y colocarlo en el html
@@ -25,10 +26,9 @@ fetch("/api/games").then(function (response) {
       return response.json();
     }
   }).then(function (json) {
+  jason = json;
   //Id de player loggeado
     playerId = json.player.Id;
-    //Crea un botón para cada uno de los juegos en que un jugador se puede unir al juego
-    gamePlayers = json.games.map(createButtonJoinGame);
     document.getElementById("lista").innerHTML = json.games.map(listOfGameDates).join("");
     chequearUsuario(json.player.email);
     })
@@ -47,21 +47,22 @@ function createButtonJoinGame (game){
 console.log(game.gamePlayers[0].player.idPlayer);
 if(game.gamePlayers[0].player.idPlayer == playerId){
 console.log("yes");
-buttonJoinGame = "<a id='joinGameButton' href= 'http://localhost:8080/web/game2.html?gp="+ game.gamePlayers[0].idGamePlayer +"'>Join Game! </a>";
-//$("#joinGameButton").show();
-}/*else if(game.gamePlayers[1].player.idPlayer == playerId){
-buttonJoinGame = "<a id='joinGameButton' href= 'http://localhost:8080/web/game2.html?gp="+ game.gamePlayers[1].idGamePlayer +"'>Join Game! </a>";
-}*/
+buttonJoinGame = "<div class='right-align'><a class='joinGameButton waves-effect cyan darken-3 btn-small' href= 'http://localhost:8080/web/game2.html?gp="+ game.gamePlayers[0].idGamePlayer +"'>Join Game! </a> </div>";
+return buttonJoinGame;
+}else if(game.gamePlayers[1] != undefined && game.gamePlayers[1].player.idPlayer == playerId){
+buttonJoinGame = "<div class='right-align'><a class='joinGameButton waves-effect cyan darken-3 btn-small' href= 'http://localhost:8080/web/game2.html?gp="+ game.gamePlayers[1].idGamePlayer +"'>Join Game! </a> </div>";
+return buttonJoinGame;
+}
 else{
 console.log("no");
-//$("#joinGameButton").hide();
-//buttonJoinGame = "";
+buttonJoinGame = "";
+return buttonJoinGame;
 }}
 
 
 //Crear la lista para poner en el html
 function listOfGameDates(game) {
-  return "<li class='collection-item deep-orange darken-3'> Horario: " + game.created + "   Jugadores: " + game.gamePlayers.map(emails) + buttonJoinGame + "</li>";
+  return "<li class='collection-item deep-orange darken-3'> Horario: " + game.created + "   Jugadores: " + game.gamePlayers.map(emails) + createButtonJoinGame(game) + "</li>";
 }
 
 function emails(e) {
@@ -189,6 +190,7 @@ function showLogin(show) {
     $("#signin-btn").show();
     $("#logout-btn").hide();
     $("#player").hide();
+    $(".joinGameButton").hide();
   } else {
     $("#logout-btn").show();
     $("#login-info").hide();

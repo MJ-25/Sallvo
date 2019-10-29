@@ -89,34 +89,42 @@ private Map<String,Object> mapaDePlayers(Player n){
 }
 
     @RequestMapping("/game_view/{nn}")
-    public Map<String, Object> getGameViewByGamePlayerID(@PathVariable Long nn) {
+    public ResponseEntity <Map<String, Object>> getGameViewByGamePlayerID(@PathVariable Long nn, Authentication authentication) {
     //The Request Mapping takes the gamePlayer Id as a parameter (the nn number)
         GamePlayer gamePlayer = gamePlayerRepository.findById(nn).get();
+        Player newPlayer = playerRepository.findByUserName(authentication.getName()).get();
 
-        Map<String, Object> dto = new LinkedHashMap<>();
-        dto.put("id de game",gamePlayer.getGame().getId());
-        dto.put("created",gamePlayer.getGame().getGameTime());
-       dto.put("gamePlayers", gamePlayer.getGame().getGamePlayers()
-                .stream()
-                .map(gamePlayer1 -> gamePlayer1.makeGamePlayerDTO())
-                .collect(Collectors.toList())
-        );
-        dto.put("ships",gamePlayer.getShips()
-                .stream()
-                .map(ship1 -> ship1.makeShipDTO())
-                .collect(Collectors.toList())
-        );
-        dto.put("salvoes", gamePlayer.getGame().getGamePlayers()
-                .stream()
-                //flatMap hace la misma función que map pero pone todos los elementos al mismo nivel (por ejemplo, un array con un solo objeto unido, en lugar de un array de varios objetos)
-                .flatMap(gamePlayer1 -> gamePlayer1.getSalvoes()
-                                                    .stream()
-                                                    .map(salvo -> salvo.makeSalvoDTO()))
-                .collect(Collectors.toList())
-        );
+        if (gamePlayer.getPlayer() == newPlayer) {
 
+            Map<String, Object> dto = new LinkedHashMap<>();
+            dto.put("id de game", gamePlayer.getGame().getId());
+            dto.put("created", gamePlayer.getGame().getGameTime());
+            dto.put("gamePlayers", gamePlayer.getGame().getGamePlayers()
+                    .stream()
+                    .map(gamePlayer1 -> gamePlayer1.makeGamePlayerDTO())
+                    .collect(Collectors.toList())
+            );
+            dto.put("ships", gamePlayer.getShips()
+                    .stream()
+                    .map(ship1 -> ship1.makeShipDTO())
+                    .collect(Collectors.toList())
+            );
+            dto.put("salvoes", gamePlayer.getGame().getGamePlayers()
+                    .stream()
+                    //flatMap hace la misma función que map pero pone todos los elementos al mismo nivel (por ejemplo, un array con un solo objeto unido, en lugar de un array de varios objetos)
+                    .flatMap(gamePlayer1 -> gamePlayer1.getSalvoes()
+                            .stream()
+                            .map(salvo -> salvo.makeSalvoDTO()))
+                    .collect(Collectors.toList())
+            );
 
-        return dto;
+            ResponseEntity<Map<String,Object>> nuevaResponseEntity = new ResponseEntity<Map<String, Object>>(dto, HttpStatus.ACCEPTED);
+
+            return nuevaResponseEntity;
+        }else{
+            return new ResponseEntity<Map <String,Object>>(new HashMap<String, Object>(), HttpStatus.FORBIDDEN);
+            //Constructor <tipo de dato> (tiene que coincidir con el tipo de dato, más información extra);
+        }
     }
 
     @RequestMapping("/leaderBoard")

@@ -9,10 +9,21 @@ $(function () {
   $("#logout-btn").click(function () {
     logout(event);
   });
-     loadData();
+  loadData();
 
+  /* Esto no funciona
+
+  $("#newGame").click(function(event){
+      event.preventDefault();
+      $.post("api/games")
+          .done(function (data){
+          console.log("game created" + data);
+          })
+          .fail(function (data) {
+          console.log("game creation failed");
+    });*/
 });
-
+});
 var error = "";
 var playerId = "";
 var gamePlayers = "";
@@ -47,10 +58,10 @@ function createButtonJoinGame (game){
 console.log(game.gamePlayers[0].player.idPlayer);
 if(game.gamePlayers[0].player.idPlayer == playerId){
 console.log("yes");
-buttonJoinGame = "<div class='right-align'><a class='joinGameButton waves-effect cyan darken-3 btn-small' href= 'http://localhost:8080/web/game2.html?gp="+ game.gamePlayers[0].idGamePlayer +"'>Join Game! </a> </div>";
+buttonJoinGame = "<div class='right-align'><a class='joinGameButton waves-effect cyan darken-3 btn-small' href= 'http://localhost:8080/web/game2.html?gp="+ game.gamePlayers[0].idGamePlayer +"'>Go back to game! </a> </div>";
 return buttonJoinGame;
 }else if(game.gamePlayers[1] != undefined && game.gamePlayers[1].player.idPlayer == playerId){
-buttonJoinGame = "<div class='right-align'><a class='joinGameButton waves-effect cyan darken-3 btn-small' href= 'http://localhost:8080/web/game2.html?gp="+ game.gamePlayers[1].idGamePlayer +"'>Join Game! </a> </div>";
+buttonJoinGame = "<div class='right-align'><a class='joinGameButton waves-effect cyan darken-3 btn-small' href= 'http://localhost:8080/web/game2.html?gp="+ game.gamePlayers[1].idGamePlayer +"'>Go back to game! </a> </div>";
 return buttonJoinGame;
 }
 else{

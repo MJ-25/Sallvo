@@ -64,7 +64,7 @@ private Map<String, Object> mapaDeGames(Game e){
 //Put in the Object "obj" the following keys (e.g. "id") and values (e.g. "e.getID"). We get the method from the Game class (it's the getter of id)
     obj.put("idGame", e.getId());
     obj.put("created",e.getGameTime());
-   // obj.put("gamePlayers",getGamePlayersDetail(e.getGamePlayers()));
+    obj.put("gamePlayers",getGamePlayersDetail(e.getGamePlayers()));
 
     return obj;
 }

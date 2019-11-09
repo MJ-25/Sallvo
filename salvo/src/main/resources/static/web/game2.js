@@ -142,3 +142,28 @@ fetch("/api/games").then(function (response) {
                           alert( "Failed: " + textStatus );
                         });
    }
+
+
+//Pasarlo por fetch o averiguar como modificar el post de jquery
+function createShips(gpid){
+    $.post("/api/games/players/" + gpid + "/ships",[{
+    type: "destroyer",
+    shipLocations: ["A1", "B1", "C1"]
+    }, {
+           type: "submarime",
+           shipLocations: ["A2", "B2", "C2"]
+           }])
+    .done(function(data){
+        console.log("yes");
+
+    })
+    .fail(function (error) {
+       console.log("ship creation failed" + error.message);
+    });
+}
+
+function customPost(array){
+
+fetch('/api/games/players/4/ships', {method: 'POST', headers:{'Content-Type': 'application/json;charset=UTF-8'}, body: JSON.stringify(array)})
+
+}

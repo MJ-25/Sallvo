@@ -39,7 +39,7 @@ for (i=0; i<=vertical.length-1; i++)
         body += "<tr><td>" + vertical[i] + "</td>";
          for (j=0; j<=horizontal.length-1; j++)
               {
-                 body += "<td id='" + id + vertical[i] + horizontal[j]+ "'></td>";
+                 body += "<td ondrop='drop(event)' ondragover='allowDrop(event)' id='" + id + vertical[i] + horizontal[j]+ "'></td>";
               }
          body += "</tr>";
     }
@@ -145,25 +145,38 @@ fetch("/api/games").then(function (response) {
 
 
 //Pasarlo por fetch o averiguar como modificar el post de jquery
-function createShips(gpid){
-    $.post("/api/games/players/" + gpid + "/ships",[{
-    type: "destroyer",
-    shipLocations: ["A1", "B1", "C1"]
-    }, {
-           type: "submarime",
-           shipLocations: ["A2", "B2", "C2"]
-           }])
-    .done(function(data){
-        console.log("yes");
-
+function createShips(gpid, newType, newShipLocation ){
+    $.post({
+    url: "/api/games/players/" + gpid + "/ships",
+    data: JSON.stringify([{type: newType, shipLocations: newShipLocation}]),
+    dataType: "text",
+    contentType: "application/json"
     })
-    .fail(function (error) {
-       console.log("ship creation failed" + error.message);
-    });
+    .done(function (response, status, jqXHR) {
+        alert( "Ships added: " + response );
+        window.location.reload();
+    })
+    .fail(function (jqXHR, status, httpError) {
+        alert("Failed to add ship: " + httpError);
+    })
 }
 
 function customPost(array){
 
 fetch('/api/games/players/4/ships', {method: 'POST', headers:{'Content-Type': 'application/json;charset=UTF-8'}, body: JSON.stringify(array)})
 
+}
+
+function allowDrop(ev) {
+  ev.preventDefault();
+}
+
+function drag(ev) {
+  ev.dataTransfer.setData("text", ev.target.id);
+}
+
+function drop(ev) {
+  ev.preventDefault();
+  var data = ev.dataTransfer.getData("text");
+  ev.target.appendChild(document.getElementById(data));
 }

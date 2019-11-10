@@ -153,7 +153,7 @@ private Map<String,Object> mapaDePlayers(Player n){
         }
     }
 
-    //Join a new game by using the method post
+    //Join a game by using the method post
     @RequestMapping(path= "/games/{id}/players", method = RequestMethod.POST)
     //PathVariable to pass the {id} as a parameter
     public ResponseEntity<Map<String, Object>> createGame (Authentication authentication,
@@ -163,18 +163,28 @@ private Map<String,Object> mapaDePlayers(Player n){
             return new ResponseEntity<>(createMap("error","You must log in!"), HttpStatus.FORBIDDEN);
         }
         //The return finishes the "if" so you can create a new one.
+
+        Player newJoinPlayer = playerRepository.findByUserName(authentication.getName()).orElse(null);
+        Game newJoinGame = gameRepository.getOne(id);
+
         //Create a new game named newJoinGame. Assign the value of the game in gameRepository that has the same id as the one passed by parameter {id}. If you can't find the game, assign thee value "null"
-        Game newJoinGame = gameRepository.findById(id).orElse(null);
+        //Game newJoinGame = gameRepository.findById(id).orElse(null);
+
         //If newJoinGame is null (i.e. the id passed by parameter doesn't exist in the repository), return an error that tells you that the game you're looking for, doesn't exist
         if(newJoinGame == null){
             return new ResponseEntity<>(createMap("error","Game doesn't exist"), HttpStatus.FORBIDDEN);
         }
+
+        if(newJoinPlayer == null){
+            return new ResponseEntity<>(createMap("error","Player doesn't exist"), HttpStatus.FORBIDDEN);
+        }
+
         //If the size of the list of gamePlayers of newJoinGame is larger or equal than 2, return an error that tells you that the game is full. You can't join it
         if(newJoinGame.getGamePlayers().size() >= 2){
-            return new ResponseEntity<>(createMap("error","Game is full"), HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(createMap("error game full ","Game is already full"), HttpStatus.FORBIDDEN);
         }
         //Create a new Player named newJoinPlayer. Assign the value of the player in repository that has the same name as the name in authentication
-        Player newJoinPlayer = playerRepository.findByUserName(authentication.getName()).get();
+        //Player newJoinPlayer = playerRepository.findByUserName(authentication.getName()).get();
         //If the gamePlayers of newJoinGame contain any of the players of newJoinGame (i.e. Each game can have up to 2 gamePlayers.
         // You need to check if the userName of the new player that wants to join the game(newJoinGame) is already a participant (gamePlayer.getPlayer().getUserName() of that game. Meaning, you are already playing that game. You can't play against yourself)
         if(newJoinGame.getGamePlayers()

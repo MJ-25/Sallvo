@@ -45,7 +45,7 @@ private ShipRepository shipRepository;
             return  new ResponseEntity<Map<String, Object>>(makeMap("error", "This is not your Game Player"), HttpStatus.UNAUTHORIZED);
         }
 
-        if (gamePlayer.getShips().size() > 0){
+        if (gamePlayer.getShips().size() > 7){
             return new ResponseEntity<Map<String, Object>>(makeMap("error", "You already have ships"), HttpStatus.FORBIDDEN);
         }
 

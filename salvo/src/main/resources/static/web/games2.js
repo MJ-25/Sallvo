@@ -67,7 +67,6 @@ function emails(e) {
 
 
 function createButtonRejoinGame (game){
-console.log(game.gamePlayers[0].player.idPlayer);
 if (game.gamePlayers.length>=2){
 if(game.gamePlayers[0].player.idPlayer == playerId){
 console.log("yes");
@@ -88,25 +87,34 @@ return buttonRejoinGame;
 
 
 function createButtonJoinGame(game){
-if (game.gamePlayers.length<2){
-if (game.gamePlayers[0].player.idPlayer != playerId){
+if(playerId!=undefined && game.gamePlayers.length<2 && game.gamePlayers[0].player.idPlayer!=playerId){
 console.log("menos de dos gp");
-console.log(game.idGame);
+console.log("id de game: " + game.idGame);
 buttonJoinGame ="<div class='right-align'><button class='joinGame joinGameButton waves-effect cyan darken-3 btn-small' onclick='post(" + game.idGame + ")'> Join game! </button> </div>";
 return buttonJoinGame;
 }else{
 buttonJoinGame = "";
 return buttonJoinGame;
-}}else{
-console.log("2 gp");
-buttonJoinGame = "";
-return buttonJoinGame;
 }}
 
-
+/*
+$(".joinGameButton").click(function(event){
+event.preventDefault();
+$.post("/api/games/" + $(this).data("gameId") + "/players")
+.done(function(data){
+    console.log("idGame 2: " + idGame);
+    window.location.href = "http://localhost:8080/web/game2.html?gp="+ data.gpid;
+})
+.fail(function (error) {
+      console.log("game creation failed" + error.message);
+      });
+})
+*/
 function post(idGame){
+console.log("Function post. IdGame: " + idGame);
       $.post("/api/games/" + idGame + "/players")
       .done(function(data){
+      console.log("idGame 2: " + idGame);
       window.location.href = "http://localhost:8080/web/game2.html?gp="+ data.gpid;
       })
       .fail(function (error) {

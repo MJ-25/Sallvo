@@ -62,7 +62,7 @@ const loadGrid = function () {
     //createGrid construye la estructura de la matriz
     createGrid(11, $(".grid-ships"), 'ships')
 
-    //Inicializo los listenener para rotar los barcos, el numero del segundo rgumento
+    //Inicializo los listenener para rotar los barcos, el numero del segundo argumento
     //representa la cantidad de celdas que ocupa tal barco
     rotateShips("carrier", 5)
     rotateShips("battleship", 4)
@@ -272,12 +272,33 @@ function loadData(){
             $('#playerInfo').text(playerInfo[0] + '(you) vs ' + playerInfo[1]);
 
             let arrayLocations =[];
-            //Function to apply a class to all the ships and put them in the first table (we do this through the id of the <td>)
+            var arrayEjeY = [];
+            var arrayEjeX = [];
+            var orientacion = "";
+            var width = 0;
+            var height = 0;
+            var type = "";
+            //Function to addWidget (ship) to grid taking into account the ships from repository
             data.ships.forEach(function(ship){
-            ship.locations.map(e => arrayLocations.push(e));
-                ship.locations.forEach(function(shipLocation){
-                    $('#Sh_'+shipLocation).addClass('ship-piece');
-                })
+            arrayEjeX= [];
+            arrayEjeY= [];
+            //Put the index of the first letter of ship location (e.g A is index 0) in the array arrayEjeY for each lotion of ship
+            ship.locations.map(e => arrayEjeY.push(vertical.findIndex(a => a==e.charAt(0))));
+            //Put the second number of location of ships (A1 -> 1) minus 1 into the array arrayEjeX
+            ship.locations.map(e => arrayEjeX.push(parseInt(e.charAt(1)-1)));
+            if(arrayEjeY[0]== arrayEjeY[1]){
+                        orientacion = "Horizontal";
+                        height = 1;
+                        width = arrayEjeX.length;
+                        }else{
+                        orientacion="Vertical";
+                        height = arrayEjeY.length;
+                        width = 1;
+                        }
+            type = ship.type;
+            grid.addWidget($('<div id="' + type + '"><div class="grid-stack-item-content ' +  type+orientacion + '"></div><div/>'),
+                    arrayEjeX[0], arrayEjeY[1], width, height);
+                    console.log("Barco " + type);
             });
 
             //Function to apply a class (colour) and the number of turn to the salvoes of player 1 and put them in the second table
@@ -299,7 +320,13 @@ function loadData(){
                 });
                 }
             });
-        console.log("ships locations: " + arrayLocations);
+        //console.log("ships locations: " + arrayLocations);
+        //console.log("Eje Y - Letras: " + arrayLetras);
+        console.log("Eje Y - Índice: " + arrayEjeY);
+        console.log("Eje X - Índice: " + arrayEjeX);
+        console.log("Orientación: " + orientacion);
+        console.log("Width: " + width);
+        console.log("Height: " + height);
         })
         .fail(function( jqXHR, textStatus ) {
           alert( "Failed: " + textStatus );
@@ -365,5 +392,5 @@ var vertical = ["A","B","C","D","E","F","G","H","I","J"];
 
     //Aqui se inicializan los widgets(nuestros barcos) en la matriz
     //.addWidget(elemento,pos x, pos y, ancho, alto) **
-    grid.addWidget($('<div id="patrol_boat"><div class="grid-stack-item-content patrol_boatHorizontal"></div><div/>'),
-        0, 1, 2, 1);
+   // grid.addWidget($('<div id="patrol_boat"><div class="grid-stack-item-content patrol_boatHorizontal"></div><div/>'),
+     //   0, 1, 2, 1);

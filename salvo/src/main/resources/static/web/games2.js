@@ -1,5 +1,6 @@
 $(function () {
   $("#logout-btn").hide();
+  $("#newGame").hide();
   $("#login-btn").click(function () {
     login(event);
   });
@@ -41,6 +42,9 @@ fetch("/api/games").then(function (response) {
     playerId = json.player.Id;
     document.getElementById("lista").innerHTML = json.games.map(listOfGameDates).join("");
     chequearUsuario(json.player.email);
+     if (playerId!=undefined){
+      $("#newGame").show();
+      }
     })
   .catch(function (error) {
     console.log("Request failed: " + error.message);
@@ -231,6 +235,7 @@ function logout(evt) {
   .done(function (data) {
         console.log("successful logout!!"),
           showLogin(true);
+          window.location.reload()
       })
    .fail(function( jqXHR, textStatus ) {
                        alert( "Failed: " + textStatus );

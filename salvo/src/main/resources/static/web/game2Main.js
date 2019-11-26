@@ -1,6 +1,6 @@
 $(function () {
   loadData();
-  loadData2();
+  loadDataDos();
   $("#logout-btn").click(function () {
     logout(event);
   });
@@ -10,10 +10,10 @@ $(function () {
 all the functionalities are explained in the gridstack github
 https://github.com/gridstack/gridstack.js/tree/develop/doc
 */
-var staticShips = "";
-$(() => loadGrid())
+var howManyShips=0;
+//$(() => loadGrid())
 //Función principal que dispara el frame gridstack.js y carga la matriz con los barcos
-const loadGrid = function (areShipsStatic) {
+function loadGrid(isStatic) {
   var options = {
     //matriz 10 x 10
     width: 10,
@@ -33,11 +33,19 @@ const loadGrid = function (areShipsStatic) {
     //sirve para no inhabilitar el movimiento en pantallas pequeñas
     disableOneColumnMode: true,
     // en falso permite arrastrar a los widget, true lo deniega
-    staticGrid: areShipsStatic, //? false : true,
-
+    staticGrid: isStatic,
     //para animaciones
     animate: true
   }
+
+ /* if(howManyShips == 0){
+  options.staticGrid= false
+  console.log("staticGrid = " + options.staticGrid);
+  }else{
+  options.staticGrid= true
+  console.log("staticGrid = " + options.staticGrid);
+  }
+*/
   //inicializacion de la matriz
   $('.grid-stack').gridstack(options);
 
@@ -60,6 +68,8 @@ const loadGrid = function (areShipsStatic) {
   $('.grid-stack').on('change', () => listenBusyCells('ships'))
 
 }
+
+
 
 
 //createGrid construye la estructura de la matriz
@@ -248,8 +258,10 @@ function getParameterByName(name) {
 
 //Function to get the name of the gamePlayers, the ships and the salvoes. It will assign a class to them so they can be coloured in the table
 function loadData() {
+
   $.get('/api/game_view/' + getParameterByName('gp'))
     .done(function (data) {
+
       let playerInfo;
       if (data.gamePlayers[0].id == getParameterByName('gp')) {
         playerInfo = [data.gamePlayers[0].player.userName, data.gamePlayers[1].player.userName];
@@ -260,12 +272,13 @@ function loadData() {
       $('#playerInfo').text(playerInfo[0] + '(you) vs ' + playerInfo[1]);
 
       isThereAShip = data.ships[0];
+      howManyShips = data.ships.length;
 
 
       if (isThereAShip == undefined ) {
+      loadGrid(false)
       $("#saveShips").show();
         console.log("There are no ships: " + isThereAShip);
-        areShipsStatic = false;
         grid.addWidget($('<div id="patrol_boat"><div class="grid-stack-item-content patrol_boatHorizontal"></div><div/>'),
           0, 1, 2, 1);
 
@@ -282,7 +295,9 @@ function loadData() {
           7, 8, 3, 1);
 
       } else {
-        areShipsStatic = true;
+            loadGrid(true)
+
+
         console.log("There are ships: " + isThereAShip);
         $("#saveShips").hide();
         let arrayLocations = [];
@@ -323,14 +338,15 @@ function loadData() {
       console.log("Orientación: " + orientacion);
       console.log("Width: " + width);
       console.log("Height: " + height);
-
+      console.log("how many ships: " + howManyShips);
     })
+
     .fail(function (jqXHR, textStatus) {
       alert("Failed: " + textStatus);
     });
 };
 
-function loadData2() {
+function loadDataDos() {
   fetch("/api/games").then(function (response) {
       if (response.ok) {
         return response.json();

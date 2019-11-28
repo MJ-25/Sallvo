@@ -83,6 +83,17 @@
     margin-top: 10vh
 }
 
+.grid-salvos{
+    background-image: url(ocean.gif);
+    background-size: cover;
+    border: 2px solid rgb(128,128,128);
+    border-radius: 10px;
+    height: 495px;
+    width: 495px;
+    margin: auto;
+    margin-top: 10vh
+}
+
 #grid{
     margin: 45px 0 0 45px;
     position: absolute;
@@ -121,6 +132,10 @@
 .busy-cell{
     background-color: rgba(0,119,190,0.5);
     
+}
+
+.target{
+background-color: red;
 }
 
 .grid-row:first-child .grid-cell{

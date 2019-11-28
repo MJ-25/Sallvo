@@ -4,6 +4,7 @@ $(function () {
   $("#logout-btn").click(function () {
     logout(event);
   });
+
 });
 
 /* Metodos propios de gridstack:
@@ -53,8 +54,10 @@ function loadGrid(isStatic) {
 
 
 
+
   //createGrid construye la estructura de la matriz
   createGrid(11, $(".grid-ships"), 'ships')
+  createGrid(11, $(".grid-salvos"), 'salvos')
 
   //Inicializo los listenener para rotar los barcos, el numero del segundo argumento
   //representa la cantidad de celdas que ocupa tal barco
@@ -70,7 +73,23 @@ function loadGrid(isStatic) {
 }
 
 
-
+//Llamar a los divs cuyo id sea salvo (el acento circunflejo es para decir que lo que siga después de esa palabra no importa, por ej. podría ser id=salvo01)
+// y cuya clase sea grid-cell y ponerle la función click a cada una de esas celdas
+var contador = 0;
+function createSalvos(){
+$('div[id^="salvos"].grid-cell').click(function(event){
+console.log("hola");
+console.log(event.target);
+if(!$(event.target).hasClass("target") && contador<5){
+//$(event.target).css('background-color', 'red');
+$(event.target).addClass("target");
+contador ++;
+}else{
+$(event.target).removeClass("target");
+contador --;
+}
+})
+}
 
 //createGrid construye la estructura de la matriz
 /*
@@ -339,6 +358,7 @@ function loadData() {
       console.log("Width: " + width);
       console.log("Height: " + height);
       console.log("how many ships: " + howManyShips);
+      createSalvos();
     })
 
     .fail(function (jqXHR, textStatus) {

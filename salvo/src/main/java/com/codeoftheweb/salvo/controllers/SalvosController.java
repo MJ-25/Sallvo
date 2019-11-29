@@ -42,13 +42,20 @@ private GamePlayerRepository gamePlayerRepository;
     if(gamePlayer.getPlayer().getUserName() != authentication.getName()){
         return  new ResponseEntity<Map<String, Object>>(makeMap("error", "This is not your Game Player"), HttpStatus.UNAUTHORIZED);
     }
+
+
     if (gamePlayer.getSalvoes().size() > 5){
         return new ResponseEntity<Map<String, Object>>(makeMap("error", "You already have salvoes"), HttpStatus.FORBIDDEN);
     }
 
-
-    salvos.setGamePlayer(gamePlayer);
+    //Preguntar si está vacío (error)
+    //Cantidad de turnos sea mayor a cantidad de salvos guardados
+    //Turnos y salvos no pueden tener diferencia mayor a 1
+    if(gamePlayer.getSalvoes().isEmpty() || (salvos.getTurn() < gamePlayer.getSalvoes().size() && salvos.getTurn() - gamePlayer.getSalvoes().size() <= 1)){
+        salvos.setGamePlayer(gamePlayer);
+        salvos.setTurn(gamePlayer.getSalvoes().size() + 1);
         salvoRepository.save(salvos);
+    }
 
     return new ResponseEntity<Map<String, Object>>(makeMap("OK", "Salvoes created"), HttpStatus.CREATED);
 }

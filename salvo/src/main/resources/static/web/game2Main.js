@@ -80,16 +80,18 @@ function createSalvos(){
 $('div[id^="salvos"].grid-cell').click(function(event){
 console.log("hola");
 console.log(event.target);
-if(!$(event.target).hasClass("target") && contador<5){
+//.target-cell-length
+if(!$(event.target).hasClass("target") && !$(event.target).hasClass("salvo") && contador<5){
 //$(event.target).css('background-color', 'red');
 $(event.target).addClass("target");
 contador ++;
-}else{
+}else if ($(event.target).hasClass("target")){
 $(event.target).removeClass("target");
 contador --;
 }
 })
 }
+
 
 //createGrid construye la estructura de la matriz
 /*
@@ -275,20 +277,25 @@ function getParameterByName(name) {
   return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
 };
 
+var gamesData;
+var playerId;
+
 //Function to get the name of the gamePlayers, the ships and the salvoes. It will assign a class to them so they can be coloured in the table
 function loadData() {
 
   $.get('/api/game_view/' + getParameterByName('gp'))
     .done(function (data) {
-
+      gamesData = data;
       let playerInfo;
       if (data.gamePlayers[0].id == getParameterByName('gp')) {
-        playerInfo = [data.gamePlayers[0].player.userName, data.gamePlayers[1].player.userName];
+        playerInfo = [data.gamePlayers[0].player.email, data.gamePlayers[1].player.email];
       } else {
-        playerInfo = [data.gamePlayers[1].player.userName, data.gamePlayers[0].player.userName];
+        playerInfo = [data.gamePlayers[1].player.email, data.gamePlayers[0].player.email];
       }
 
       $('#playerInfo').text(playerInfo[0] + '(you) vs ' + playerInfo[1]);
+
+      playerId=data.gamePlayers[0].player.Id;
 
       isThereAShip = data.ships[0];
       howManyShips = data.ships.length;
@@ -358,6 +365,7 @@ function loadData() {
       console.log("Width: " + width);
       console.log("Height: " + height);
       console.log("how many ships: " + howManyShips);
+      console.log("player id: " + playerId);
       createSalvos();
     })
 
@@ -447,6 +455,46 @@ var vertical = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"];
                 }
             });
 */
+
+
+/*.targetCell.each(function(){
+let location= $(this).attr("id").substring(7);
+let locationConverted
+locationsToShoot.push
+)*/
+
+
+function getTurn (){
+  var arr=[]
+  var turn = 0;
+  gamesData.salvoes.map(function(salvo){
+    if(salvo.player == playerId){
+      arr.push(salvo.turn);
+    }
+  })
+  turn = Math.max.apply(Math, arr);
+
+  if (turn == -Infinity){
+    return 1;
+  } else {
+    return turn + 1;
+  }
+
+}
+
+
+function saveSalvos (){
+var turn = getTurn();
+var salvoPositions  = [];
+$(".target").each(function(){
+var locations = $(this).attr("id").substring(7);
+var locationConverted = String.fromCharCode(parseInt(location[0]) + 65) + (parseInt(location[1]) + 1);
+salvoPositions.push(locationConverted);
+})
+console.log("Salvo positions: " + salvoPositions);
+}
+
+
 
 const obtenerPosicion = function (shipType) {
     var ship = new Object();

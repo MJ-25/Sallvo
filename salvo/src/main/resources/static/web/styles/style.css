@@ -137,6 +137,16 @@
 .target{
 background-color: red;
 }
+.salvoFired{
+background-color: purple;
+}
+.salvoFiredToYou{
+background-color: black;
+}
+
+.shipSinking{
+background-image: url("fire.png")
+}
 
 .grid-row:first-child .grid-cell{
     background-color: rgba(170,169,173,0.7);

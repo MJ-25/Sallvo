@@ -39,14 +39,6 @@ function loadGrid(isStatic) {
     animate: true
   }
 
- /* if(howManyShips == 0){
-  options.staticGrid= false
-  console.log("staticGrid = " + options.staticGrid);
-  }else{
-  options.staticGrid= true
-  console.log("staticGrid = " + options.staticGrid);
-  }
-*/
   //inicializacion de la matriz
   $('.grid-stack').gridstack(options);
 
@@ -81,8 +73,7 @@ $('div[id^="salvos"].grid-cell').click(function(event){
 console.log("hola");
 console.log(event.target);
 //.target-cell-length
-if(!$(event.target).hasClass("target") && !$(event.target).hasClass("salvo") && contador<5){
-//$(event.target).css('background-color', 'red');
+if(!$(event.target).hasClass("target") && !$(event.target).hasClass("salvoFired") && contador<5){
 $(event.target).addClass("target");
 contador ++;
 }else if ($(event.target).hasClass("target")){
@@ -279,6 +270,7 @@ function getParameterByName(name) {
 
 var gamesData;
 var playerId;
+var isThereASalvo;
 
 //Function to get the name of the gamePlayers, the ships and the salvoes. It will assign a class to them so they can be coloured in the table
 function loadData() {
@@ -289,16 +281,23 @@ function loadData() {
       let playerInfo;
       if (data.gamePlayers[0].id == getParameterByName('gp')) {
         playerInfo = [data.gamePlayers[0].player.email, data.gamePlayers[1].player.email];
+        playerId=data.gamePlayers[0].player.Id;
+        playerIdOpponent=data.gamePlayers[1].player.Id;
       } else {
         playerInfo = [data.gamePlayers[1].player.email, data.gamePlayers[0].player.email];
+        playerId=data.gamePlayers[1].player.Id;
+        playerIdOpponent=data.gamePlayers[0].player.Id;
       }
 
       $('#playerInfo').text(playerInfo[0] + '(you) vs ' + playerInfo[1]);
 
-      playerId=data.gamePlayers[0].player.Id;
 
-      isThereAShip = data.ships[0];
+
+      isThereAShip = data.ships[0].type;
       howManyShips = data.ships.length;
+      isThereASalvo = data.salvoes[0];
+
+
 
 
       if (isThereAShip == undefined ) {
@@ -354,21 +353,44 @@ function loadData() {
           type = ship.type;
           grid.addWidget($('<div id="' + type + '"><div class="grid-stack-item-content ' + type + orientacion + '"></div><div/>'),
             arrayEjeX[0], arrayEjeY[1], width, height);
-          console.log("Barco " + type);
         });
 
       }
 
-      console.log("Eje Y - Índice: " + arrayEjeY);
-      console.log("Eje X - Índice: " + arrayEjeX);
-      console.log("Orientación: " + orientacion);
-      console.log("Width: " + width);
-      console.log("Height: " + height);
-      console.log("how many ships: " + howManyShips);
-      console.log("player id: " + playerId);
-      createSalvos();
-    })
+       createSalvos();
 
+
+
+
+if(isThereASalvo!=undefined){
+      $("#saveSalvos").show();
+            data.salvoes.forEach(function(salvoFired){
+
+
+            if(salvoFired.player == playerId){
+            salvoFired.locations.forEach(function(salvoFiredLocations){
+            var loc1 = salvoFiredLocations.charCodeAt(0)-65;
+            var loc2 = parseInt(salvoFiredLocations.substring(1)-1);
+            $("div[id='salvos" + loc1+loc2 +"']").addClass("salvoFired");
+
+            })}else if(salvoFired.player == playerIdOpponent){
+            salvoFired.locations.forEach(function(salvoFiredLocations){
+            var loc1 = salvoFiredLocations.charCodeAt(0)-65;
+            var loc2 = parseInt(salvoFiredLocations.substring(1)-1);
+
+            $("div[id='ships" + loc1+loc2 +"']").addClass("salvoFiredToYou");
+
+             if( $("div[id='ships" + loc1+loc2 +"']").hasClass("salvoFiredToYou") && !$("div[id='ships" + loc1+loc2 +"']").hasClass("empty-cell")){
+                 $("div[id='ships" + loc1+loc2 +"']").addClass("shipSinking");
+                 }
+
+            })}})}else{
+            console.log("No hay salvos");
+            $("#saveSalvos").hide();
+            }
+
+
+        })
     .fail(function (jqXHR, textStatus) {
       alert("Failed: " + textStatus);
     });
@@ -411,7 +433,7 @@ function logout(evt) {
 
 
 //Function to create new ships
-function createShips(gpid, newType, newShipLocation) {
+/*function createShips(gpid, newType, newShipLocation) {
   $.post({
       url: "/api/games/players/" + gpid + "/ships",
       data: JSON.stringify([{
@@ -428,40 +450,10 @@ function createShips(gpid, newType, newShipLocation) {
     .fail(function (jqXHR, status, httpError) {
       alert("Failed to add ship: " + httpError);
     })
-}
+}*/
 
 var horizontal = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 var vertical = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"];
-
-
-/*
- //Function to apply a class (colour) and the number of turn to the salvoes of player 1 and put them in the second table
-            data.salvoes.forEach(function(salvo){
-            if(data.gamePlayers[0].player.userName,data.gamePlayers[1].id === salvo.player){
-                salvo.locations.forEach(function(salvoLocation){
-                    $('#Sal_'+salvoLocation).addClass('salvo-piece')
-                    $('#Sal_'+salvoLocation).text(salvo.turn);
-                });
-                }
-                else{ //For the salvoes of player 2 we put them in the first table. If the salvo hit a ship (e.g. the location of the salvo is the same as the location of one of the ships in the array arrayLocations), the ship turns purple and the turn number is written in it
-                salvo.locations.forEach(function(salvoLocation){
-                if(salvoLocation == arrayLocations.find(e => e == salvoLocation)){
-                    $('#Sh_'+salvoLocation).addClass('shipHit')
-                    $('#Sh_'+salvoLocation).text(salvo.turn);}
-                    else{
-                    $('#Sh_'+salvoLocation).addClass('salvo-piece')
-                    }
-                });
-                }
-            });
-*/
-
-
-/*.targetCell.each(function(){
-let location= $(this).attr("id").substring(7);
-let locationConverted
-locationsToShoot.push
-)*/
 
 
 function getTurn (){
@@ -487,14 +479,28 @@ function saveSalvos (){
 var turn = getTurn();
 var salvoPositions  = [];
 $(".target").each(function(){
-var locations = $(this).attr("id").substring(7);
-var locationConverted = String.fromCharCode(parseInt(location[0]) + 65) + (parseInt(location[1]) + 1);
+var locations = $(this).attr("id").substring(6);
+var locationConverted = String.fromCharCode(parseInt(locations[0]) + 65) + (parseInt(locations[1]) + 1);
 salvoPositions.push(locationConverted);
 })
-console.log("Salvo positions: " + salvoPositions);
+console.log("Salvo positions: " + salvoPositions + " and turn: " + turn);
+$.post({
+      url: "/api/games/players/" + getParameterByName('gp') + "/salvos",
+      data: JSON.stringify({
+        turn: turn,
+        salvoLocations: salvoPositions
+      }),
+      dataType: "text",
+      contentType: "application/json"
+    })
+    .done(function (response, status, jqXHR) {
+      alert("Salvos added: " + response);
+      window.location.reload();
+    })
+    .fail(function (jqXHR, status, httpError) {
+      alert("Failed to add salvos: " + httpError);
+    })
 }
-
-
 
 const obtenerPosicion = function (shipType) {
     var ship = new Object();
@@ -519,7 +525,6 @@ const obtenerPosicion = function (shipType) {
     return objShip;
 }
 
-
 function addShip(){
         var carrier = obtenerPosicion("carrier")
         var patrol = obtenerPosicion("patrol_boat")
@@ -533,9 +538,12 @@ function addShip(){
           dataType: "text",
           contentType: "application/json"
         })
+        .done(function(){
+        saveSalvos();
+        })
         .done(function (response, status, jqXHR) {
 
-          alert( "Ship added: " + response );
+          alert( "Ship and salvoes added: " + response );
           window.location.reload();
         })
         .fail(function (jqXHR, status, httpError) {

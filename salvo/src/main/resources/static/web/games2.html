@@ -8,25 +8,26 @@
 
     <!-- Compiled and minified JavaScript -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <link rel="stylesheet" href="styles/style.css" />
 </head>
-<body>
+<body class="black">
 <div class="container">
 <form id="login-form" onsubmit="return false">
     <div id="login-info">
     <div class="input-field col s6">
-        <input id="name" type="text" class="validate">
-        <label for="name">Name</label>
+        <input id="name" type="text" class="validate white-text">
+        <label for="name" class="white-text">Name</label>
     </div>
 
     <div class="input-field col s12">
-        <input id="password" type="password" class="validate">
-        <label for="password">Password</label>
+        <input id="password" type="password" class="validate white-text">
+        <label for="password" class="white-text">Password</label>
     </div>
     </div>
-    <button id="login-btn" type="button">Log in</button>
-    <button id="signin-btn" type="button">Sign in</button>
-    <h5 id="player"></h5>
-    <button id="logout-btn" type="button">Log out</button>
+    <button id="login-btn" type="button" class="white btn-small black-text">Log in</button>
+    <button id="signin-btn" type="button" class="white btn-small black-text">Sign in</button>
+    <h5 class="white-text" id="player"></h5>
+    <button id="logout-btn" type="button" class="white btn-small black-text">Log out</button>
     </form>
 
     <div id="errorMessages">
@@ -36,15 +37,15 @@
     </div>
 </div>
 
-<div class="container cyan darken-3">
+<div class="container red darken-4">
     <h2 class="white-text center-align">Games</h2>
-    <div class='right-align'><button class="white btn-small teal-text" id="newGame">Create a new game</button></div>
+    <div class='right-align'><button class="white btn-small black-text" id="newGame">Create a new game</button></div>
     <ul id="lista" class="collection"></ul>
     </div>
 
 <div class="container" id="tableLeaderBoard">
-   <table class="centered deep-orange darken-3">
-       <thead id="headLeaderBoard" class="cyan darken-3 white-text center-align">
+   <table class="centered grey darken-3">
+       <thead id="headLeaderBoard" class="red darken-4 white-text center-align">
        <th>Name</th> <th>Total</th> <th>Won</th> <th>Lost</th> <th>Tied</th> <th>Games Played</th>
        </thead>
 

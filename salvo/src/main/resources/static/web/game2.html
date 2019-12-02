@@ -10,38 +10,37 @@
     <link rel="stylesheet" href="dist/gridstack-extra.css" />
     <link rel="stylesheet" href="styles/style.css" />
 </head>
-<body class="container">
-<div id="logout">
-<h5 id="player"></h5>
-<button id="logout-btn" type="button">Log out</button>
-</div>
-<div>
-    <span id="playerInfo"></span>
+<body id="body">
+<div id="logout" class="container">
+<h5 id="player" class="white-text"></h5>
+<button id="logout-btn" type="button" class="btn red darken-4 white-text">Log out</button><br>
+    <span id="playerInfo" class="white-text"></span>
 </div>
 
 <div class="row">
     <div class="col s6">
-<div class="grid-ships">
-
-    <div id="grid" class="grid-stack grid-stack-10">
-
-    </div>
-</div>
-
+            <div class="grid-ships">
+                <div id="grid" class="grid-stack grid-stack-10">
+                </div>
+            </div>
     </div>
 
     <div class="col s6">
-<div class="grid-salvos">
-
-    <!--<div id="gridSalvo" class="grid-stack grid-stack-10">
-
-    </div>-->
-</div>
-</div>
+            <div class="grid-salvos">
+            </div>
+    </div>
+    <button id="saveShips" onclick="addShip()" class="btn red darken-4 white-text right">Save ships</button>
+    <button id="saveSalvos" onclick="saveSalvos()" class="btn red darken-4 white-text right">Save salvos</button>
 </div>
 
-<button id="saveShips" onclick="addShip()">Save ships</button>
-<button id="saveSalvos" onclick="saveSalvos()">Save salvos</button>
+<div id="sunkShips" class="container">
+    <table>
+        <thead><th>Turn</th><th>Ships hit</th><th>Ships you've hit</th></thead>
+        <tbody id="tableSunkShips"></tbody>
+    </table>
+
+</div>
+
 
 <small id="alert-text"></small>
 

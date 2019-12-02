@@ -60,7 +60,7 @@ var buttonJoinGame = "";
 
 //Crear la lista para poner en el html
 function listOfGameDates(game) {
-  return "<li class='collection-item deep-orange darken-3'> Horario: " + game.created + "   Jugadores: " + game.gamePlayers.map(emails) + createButtonRejoinGame(game) + createButtonJoinGame(game) + "</li>";
+  return "<li class='collection-item grey darken-3 white-text'> Horario: " + game.created + "   Jugadores: " + game.gamePlayers.map(emails) + createButtonRejoinGame(game) + createButtonJoinGame(game) + "</li>";
 }
 
 function emails(e) {
@@ -74,10 +74,10 @@ function createButtonRejoinGame (game){
 if (game.gamePlayers.length>=2){
 if(game.gamePlayers[0].player.idPlayer == playerId){
 console.log("yes");
-buttonRejoinGame = "<div class='right-align'><a class='joinGameButton waves-effect cyan darken-3 btn-small' href= 'http://localhost:8080/web/game2.html?gp="+ game.gamePlayers[0].idGamePlayer +"'>Go back to game! </a> </div>";
+buttonRejoinGame = "<div class='right-align'><a class='joinGameButton waves-effect red darken-4 btn-small' href= 'http://localhost:8080/web/game2.html?gp="+ game.gamePlayers[0].idGamePlayer +"'>Go back to game! </a> </div>";
 return buttonRejoinGame;
 }else if(game.gamePlayers[1] != undefined && game.gamePlayers[1].player.idPlayer == playerId){
-buttonRejoinGame= "<div class='right-align'><a class='joinGameButton waves-effect cyan darken-3 btn-small' href= 'http://localhost:8080/web/game2.html?gp="+ game.gamePlayers[1].idGamePlayer +"'>Go back to game! </a> </div>";
+buttonRejoinGame= "<div class='right-align'><a class='joinGameButton waves-effect red darken-4 btn-small' href= 'http://localhost:8080/web/game2.html?gp="+ game.gamePlayers[1].idGamePlayer +"'>Go back to game! </a> </div>";
 return buttonRejoinGame;
 }else {
 buttonRejoinGame = "";
@@ -94,7 +94,7 @@ function createButtonJoinGame(game){
 if(playerId!=undefined && game.gamePlayers.length<2 && game.gamePlayers[0].player.idPlayer!=playerId){
 console.log("menos de dos gp");
 console.log("id de game: " + game.idGame);
-buttonJoinGame ="<div class='right-align'><button class='joinGame joinGameButton waves-effect cyan darken-3 btn-small' onclick='post(" + game.idGame + ")'> Join game! </button> </div>";
+buttonJoinGame ="<div class='right-align'><button class='joinGame joinGameButton waves-effect red darken-4 btn-small' onclick='post(" + game.idGame + ")'> Join game! </button> </div>";
 return buttonJoinGame;
 }else{
 buttonJoinGame = "";
@@ -149,7 +149,7 @@ fetch("/api/leaderBoard").then(function (response) {
 
 //Crea el contenido que va adentro de la tabla
 function tableBody(e) {
-  return "<tr><td>" + e.email +
+  return "<tr class='white-text'><td>" + e.email +
     "</td><td>" + e.score.total +
     "</td><td>" + e.score.won +
     "</td><td>" + e.score.lost +

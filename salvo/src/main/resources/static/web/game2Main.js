@@ -4,7 +4,6 @@ $(function () {
   $("#logout-btn").click(function () {
     logout(event);
   });
-
 });
 
 /* Metodos propios de gridstack:
@@ -293,7 +292,7 @@ function loadData() {
 
 
 
-      isThereAShip = data.ships[0].type;
+      isThereAShip = data.ships[0];
       howManyShips = data.ships.length;
       isThereASalvo = data.salvoes[0];
 
@@ -303,6 +302,8 @@ function loadData() {
       if (isThereAShip == undefined ) {
       loadGrid(false)
       $("#saveShips").show();
+      $("#saveSalvos").hide();
+      $(".grid-salvos").hide();
         console.log("There are no ships: " + isThereAShip);
         grid.addWidget($('<div id="patrol_boat"><div class="grid-stack-item-content patrol_boatHorizontal"></div><div/>'),
           0, 1, 2, 1);
@@ -325,6 +326,8 @@ function loadData() {
 
         console.log("There are ships: " + isThereAShip);
         $("#saveShips").hide();
+        $(".grid-salvos").show();
+        $("#saveSalvos").show();
         let arrayLocations = [];
         var arrayEjeY = [];
         var arrayEjeX = [];
@@ -363,8 +366,7 @@ function loadData() {
 
 
 if(isThereASalvo!=undefined){
-      $("#saveSalvos").show();
-            data.salvoes.forEach(function(salvoFired){
+          data.salvoes.forEach(function(salvoFired){
 
 
             if(salvoFired.player == playerId){
@@ -386,10 +388,9 @@ if(isThereASalvo!=undefined){
 
             })}})}else{
             console.log("No hay salvos");
-            $("#saveSalvos").hide();
             }
 
-
+        document.getElementById("tableSunkShips").innerHTML=createTableSunkShips(gamesData);
         })
     .fail(function (jqXHR, textStatus) {
       alert("Failed: " + textStatus);
@@ -538,15 +539,24 @@ function addShip(){
           dataType: "text",
           contentType: "application/json"
         })
-        .done(function(){
+        /*.done(function(){
         saveSalvos();
-        })
+        })*/
         .done(function (response, status, jqXHR) {
 
-          alert( "Ship and salvoes added: " + response );
+          alert( "Ships added: " + response );
           window.location.reload();
         })
         .fail(function (jqXHR, status, httpError) {
           alert("Failed to add ship: " + status + " " + httpError);
         })
+}
+
+function createTableSunkShips(data){
+var tabla = data.salvoes.map(makeTable);
+function makeTable(e){
+if(e.player==playerId){
+var a = "<tr><td>" + e.turn+ "</td></tr>";
+}return a}
+return tabla;
 }

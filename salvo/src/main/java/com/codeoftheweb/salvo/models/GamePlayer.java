@@ -3,10 +3,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Entity
@@ -27,10 +24,10 @@ public class GamePlayer {
     private Game game;
 
     @OneToMany(mappedBy="gamePlayer", fetch=FetchType.EAGER)
-    private Set<Ship> ships;
+    private List<Ship> ships;
 
     @OneToMany(mappedBy = "gamePlayer", fetch = FetchType.EAGER)
-    private Set<Salvo> salvoes;
+    private List<Salvo> salvoes;
 
     public GamePlayer() {
     }
@@ -69,16 +66,16 @@ public class GamePlayer {
     }
 
     @JsonIgnore
-    public Set<Ship> getShips() { return ships; }
+    public List<Ship> getShips() { return ships; }
 
-    public void setShips(Set<Ship> ships) { this.ships = ships; }
+    public void setShips(List<Ship> ships) { this.ships = ships; }
 
     @JsonIgnore
-    public Set<Salvo> getSalvoes() {
+    public List<Salvo> getSalvoes() {
         return salvoes;
     }
 
-    public void setSalvoes(Set<Salvo> salvoes) {
+    public void setSalvoes(List<Salvo> salvoes) {
         this.salvoes = salvoes;
     }
 

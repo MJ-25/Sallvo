@@ -51,6 +51,7 @@ private GamePlayerRepository gamePlayerRepository;
     if (salvos.getSalvoLocations().size() > 5){
         return new ResponseEntity<Map<String, Object>>(makeMap("error", "You already have salvoes"), HttpStatus.FORBIDDEN);
     }else if(!gamePlayer.getSalvoes().isEmpty() || (salvos.getTurn() > gamePlayer.getSalvoes().size() && (salvos.getTurn() - gamePlayer.getSalvoes().size() == 1))){
+        //if(gamePlayer.getPlayer().getId() == salvos.getGamePlayer().getPlayer().getId()){
         salvos.setGamePlayer(gamePlayer);
         salvos.setTurn(gamePlayer.getSalvoes().size() + 1);
         salvoRepository.save(salvos);

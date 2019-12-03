@@ -93,6 +93,7 @@ private Map<String,Object> mapaDePlayers(Player n){
     //The Request Mapping takes the gamePlayer Id as a parameter (the nn number)
         Player newPlayer = playerRepository.findByUserName(authentication.getName()).get();
         GamePlayer gamePlayer = gamePlayerRepository.findById(nn).get();
+        GamePlayer opponent = gamePlayer.GetOpponent().orElse(null);
 
         if (gamePlayer.getPlayer() == newPlayer) {
 
@@ -117,6 +118,7 @@ private Map<String,Object> mapaDePlayers(Player n){
                             .map(salvo -> salvo.makeSalvoDTO()))
                     .collect(Collectors.toList())
             );
+            dto.put("hits", gamePlayer.hitsDto(gamePlayer,opponent));
 
             ResponseEntity<Map<String,Object>> nuevaResponseEntity = new ResponseEntity<Map<String, Object>>(dto, HttpStatus.ACCEPTED);
 
@@ -211,6 +213,12 @@ private Map<String,Object> mapaDePlayers(Player n){
         map.put(str, obj);
         return map;
     }
+
+
+
+
+
+
 
 
 }

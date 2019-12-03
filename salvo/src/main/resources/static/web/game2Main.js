@@ -553,10 +553,12 @@ function addShip(){
 }
 
 function createTableSunkShips(data){
-var tabla = data.salvoes.map(makeTable);
+var tabla = data.hits.self.map(makeTable);
 function makeTable(e){
-if(e.player==playerId){
-var a = "<tr><td>" + e.turn+ "</td></tr>";
-}return a}
+var a = "<tr><td>" + e.turn+ "</td><td>Carrier ship: "+ haveShitsBeenHit(e.damages.carrierHits)+"</td><td>Battle ship: "+ haveShitsBeenHit(e.damages.battleshipHits)+"</td><td>Submarine ship: "+ haveShitsBeenHit(e.damages.submarineHits)+"</td></tr>";
+return a}
 return tabla;
+}
+function haveShitsBeenHit(barco){
+if(barco != 0){return barco}else{return "no hits!"}
 }

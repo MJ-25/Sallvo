@@ -484,11 +484,12 @@ var locations = $(this).attr("id").substring(6);
 var locationConverted = String.fromCharCode(parseInt(locations[0]) + 65) + (parseInt(locations[1]) + 1);
 salvoPositions.push(locationConverted);
 })
+
 console.log("Salvo positions: " + salvoPositions + " and turn: " + turn);
+
 $.post({
       url: "/api/games/players/" + getParameterByName('gp') + "/salvos",
       data: JSON.stringify({
-        turn: turn,
         salvoLocations: salvoPositions
       }),
       dataType: "text",
@@ -553,11 +554,23 @@ function addShip(){
 }
 
 function createTableSunkShips(data){
-var tabla = data.hits.self.map(makeTable);
-function makeTable(e){
-var a = "<tr><td>" + e.turn+ "</td><td>Carrier ship: "+ haveShitsBeenHit(e.damages.carrierHits)+"</td><td>Battle ship: "+ haveShitsBeenHit(e.damages.battleshipHits)+"</td><td>Submarine ship: "+ haveShitsBeenHit(e.damages.submarineHits)+"</td></tr>";
-return a}
-return tabla;
+
+        data.hits.self.sort(function (a, b) {
+          if (a.turn < b.turn) {
+            return 1;
+          }
+          if (a.turn > b.turn) {
+            return -1;
+          }
+          // a must be equal to b
+          return 0;
+        });
+
+        var tabla = data.hits.self.map(makeTable);
+        function makeTable(e){
+        var a = "<tr><td>" + e.turn+ "</td><td>Carrier ship: "+ haveShitsBeenHit(e.damages.carrierHits)+"</td><td>Battle ship: "+ haveShitsBeenHit(e.damages.battleshipHits)+"</td><td>Submarine ship: "+ haveShitsBeenHit(e.damages.submarineHits)+"</td><td>Destroyer ship: "+ haveShitsBeenHit(e.damages.destroyerHits)+"</td><td>Patrol boat ship: "+ haveShitsBeenHit(e.damages.patrolboatHits)+"</td></tr>";
+        return a}
+    return tabla;
 }
 function haveShitsBeenHit(barco){
 if(barco != 0){return barco}else{return "no hits!"}

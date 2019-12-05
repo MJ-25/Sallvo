@@ -69,7 +69,7 @@ private Map<String, Object> mapaDeGames(Game e){
     return obj;
 }
 
-private List<Object> getGamePlayersDetail(List <GamePlayer> o){
+private List<Object> getGamePlayersDetail(Set<GamePlayer> o){
     return o.stream().map(n-> mapaDeGamePlayers(n)).collect(Collectors.toList());
 }
 
@@ -93,7 +93,7 @@ private Map<String,Object> mapaDePlayers(Player n){
     //The Request Mapping takes the gamePlayer Id as a parameter (the nn number)
         Player newPlayer = playerRepository.findByUserName(authentication.getName()).get();
         GamePlayer gamePlayer = gamePlayerRepository.findById(nn).get();
-        GamePlayer opponent = gamePlayer.GetOpponent().orElse(null);
+        GamePlayer opponent = gamePlayer.GetOpponent();
 
         if (gamePlayer.getPlayer() == newPlayer) {
 
@@ -158,7 +158,7 @@ private Map<String,Object> mapaDePlayers(Player n){
     //Join a game by using the method post
     @RequestMapping(path= "/games/{id}/players", method = RequestMethod.POST)
     //PathVariable to pass the {id} as a parameter
-    public ResponseEntity<Map<String, Object>> createGame (Authentication authentication,
+    public ResponseEntity<Map<String, Object>> joinGame (Authentication authentication,
                                                            @PathVariable Long id){
         //Check if authentication is a guest (i.e. null). The function is already declared in the controller. If that is the case, return an error (You must log in)
         if(isGuest(authentication)){

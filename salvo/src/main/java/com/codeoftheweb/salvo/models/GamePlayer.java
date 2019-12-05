@@ -27,15 +27,19 @@ public class GamePlayer {
     private List<Ship> ships;
 
     @OneToMany(mappedBy = "gamePlayer", fetch = FetchType.EAGER)
-    private List<Salvo> salvoes;
+    private Set<Salvo> salvoes;
 
     public GamePlayer() {
+        this.ships  =   new ArrayList<>();
+        this.salvoes    =   new HashSet<>();
     }
 
     public GamePlayer(Player player, Game game) {
         this.joinTime = new Date();
         this.player = player;
         this.game = game;
+        this.ships  =   new ArrayList<>();
+        this.salvoes    =   new HashSet<>();
     }
 
 
@@ -71,11 +75,11 @@ public class GamePlayer {
     public void setShips(List<Ship> ships) { this.ships = ships; }
 
     @JsonIgnore
-    public List<Salvo> getSalvoes() {
+    public Set<Salvo> getSalvoes() {
         return salvoes;
     }
 
-    public void setSalvoes(List<Salvo> salvoes) {
+    public void setSalvoes(Set<Salvo> salvoes) {
         this.salvoes = salvoes;
     }
 
@@ -86,11 +90,11 @@ public class GamePlayer {
         return dto;
     }
 
-    public Optional<GamePlayer> GetOpponent(){
+    public GamePlayer GetOpponent(){
         return this.getGame().getGamePlayers()
                 .stream()
                 .filter(opponent -> this.getId() != opponent.getId())
-                .findFirst();
+                .findFirst().orElse(new GamePlayer());
     }
     public Map<String,Object> hitsDto(GamePlayer self,
                                        GamePlayer opponent){
@@ -109,6 +113,7 @@ public class GamePlayer {
         int patrolboatDamage = 0;
         int submarineDamage = 0;
         int battleshipDamage = 0;
+
         List<String> carrierLocations = new ArrayList<>();
         List<String> destroyerLocations = new ArrayList<>();
         List<String> submarineLocations = new ArrayList<>();
@@ -140,12 +145,16 @@ public class GamePlayer {
             Integer submarineHitsInTurn = 0;
             Integer destroyerHitsInTurn = 0;
             Integer patrolboatHitsInTurn = 0;
+
             Integer missedShots = salvo.getSalvoLocations().size();
+
             Map<String, Object> hitsMapPerTurn = new LinkedHashMap<>();
             Map<String, Object> damagesPerTurn = new LinkedHashMap<>();
             List<String> salvoLocationsList = new ArrayList<>();
             List<String> hitCellsList = new ArrayList<>();
+
             salvoLocationsList.addAll(salvo.getSalvoLocations());
+
             for (String salvoShot : salvoLocationsList) {
                 if (carrierLocations.contains(salvoShot)) {
                     carrierDamage++;

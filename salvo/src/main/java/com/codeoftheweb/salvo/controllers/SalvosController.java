@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api")
@@ -29,19 +30,21 @@ private GamePlayerRepository gamePlayerRepository;
 
 @RequestMapping(value= "/games/players/{gamePlayerId}/salvos", method = RequestMethod.POST)
     public ResponseEntity<Map<String, Object>> addSalvos (@PathVariable long gamePlayerId, @RequestBody Salvo salvos, Authentication authentication){
+
     if (isGuest(authentication)) {
         return new ResponseEntity<>(makeMap("error", "You must log in!"), HttpStatus.UNAUTHORIZED);
     }
+
     GamePlayer gamePlayer = gamePlayerRepository.findById(gamePlayerId).orElse(null);
 
     if(gamePlayer == null) {
         return new ResponseEntity<Map<String, Object>>(makeMap("error", "Game Player doesn't exist"), HttpStatus.UNAUTHORIZED);
-
     }
 
     if(gamePlayer.getPlayer().getUserName() != authentication.getName()){
         return  new ResponseEntity<Map<String, Object>>(makeMap("error", "This is not your Game Player"), HttpStatus.UNAUTHORIZED);
     }
+
     if (salvos.getSalvoLocations().size() < 5) {
         return new ResponseEntity<Map<String, Object>>(makeMap("error", "You haven't used all your salvoes"), HttpStatus.FORBIDDEN);
     }
@@ -50,18 +53,26 @@ private GamePlayerRepository gamePlayerRepository;
     //Turnos y salvos no pueden tener diferencia mayor a 1
     if (salvos.getSalvoLocations().size() > 5){
         return new ResponseEntity<Map<String, Object>>(makeMap("error", "You already have salvoes"), HttpStatus.FORBIDDEN);
-    }else if(!gamePlayer.getSalvoes().isEmpty() || (salvos.getTurn() > gamePlayer.getSalvoes().size() && (salvos.getTurn() - gamePlayer.getSalvoes().size() == 1))){
-        //if(gamePlayer.getPlayer().getId() == salvos.getGamePlayer().getPlayer().getId()){
+    }/*else if(!gamePlayer.getSalvoes().isEmpty() || (salvos.getTurn() > gamePlayer.getSalvoes().size() && (salvos.getTurn() - gamePlayer.getSalvoes().size() == 1))){
         salvos.setGamePlayer(gamePlayer);
-        salvos.setTurn(gamePlayer.getSalvoes().size() + 1);
+        List<Salvo> playersSalvo = gamePlayer.getSalvoes().stream().filter(salvo -> salvo.getGamePlayer().getPlayer().getId() == gamePlayer.getPlayer().getId()).collect(Collectors.toList());
+        salvos.setTurn(playersSalvo.size() + 1);
         salvoRepository.save(salvos);
         return new ResponseEntity<Map<String, Object>>(makeMap("OK", "Salvoes created"), HttpStatus.CREATED);
     }else{
 
         return  new ResponseEntity<Map<String, Object>>(makeMap("error", "You have fired all your salvos"), HttpStatus.UNAUTHORIZED);
+    }*/
+
+    if(gamePlayer.getSalvoes().size()   <=  gamePlayer.GetOpponent().getSalvoes().size()){
+
+        salvos.setTurn(gamePlayer.getSalvoes().size()   +   1);
+        salvos.setGamePlayer(gamePlayer);
+        salvoRepository.save(salvos);
+        return new ResponseEntity<>(makeMap("OK","..........."),HttpStatus.CREATED);
     }
 
-
+    return new ResponseEntity<>(makeMap("Error","..........."),HttpStatus.CREATED);
 }
 
     private Map<String, Object> makeMap(String key, Object value) {

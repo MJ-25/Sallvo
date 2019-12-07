@@ -32,15 +32,25 @@
     <button id="saveShips" onclick="addShip()" class="btn red darken-4 white-text right">Save ships</button>
     <button id="saveSalvos" onclick="saveSalvos()" class="btn red darken-4 white-text right">Save salvos</button>
 </div>
-
-<div id="sunkShips" class="container">
+<div class="row">
+<div id="sunkShips" class="col s6">
+    <h4>Your ships</h4>
     <table>
-        <thead><th>Turn</th><th>Ships hit</th><th>Ships you've hit</th></thead>
+        <thead><th>Turn</th><th>Carrier ship</th><th>Battle ship</th><th>Submarine ship</th><th>Destroyer ship</th><th>Patrol boat ship</th></thead>
         <tbody id="tableSunkShips"></tbody>
     </table>
 
 </div>
 
+<div id="sunkShipsOpponent" class="col s6">
+    <h4>Your opponent's ships</h4>
+    <table>
+        <thead><th>Turn</th><th>Carrier ship</th><th>Battle ship</th><th>Submarine ship</th><th>Destroyer ship</th><th>Patrol boat ship</th></thead>
+        <tbody id="tableSunkShipsOpponent"></tbody>
+    </table>
+
+</div>
+</div>
 
 <small id="alert-text"></small>
 

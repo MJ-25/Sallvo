@@ -374,8 +374,11 @@ if(isThereASalvo!=undefined){
             var loc1 = salvoFiredLocations.charCodeAt(0)-65;
             var loc2 = parseInt(salvoFiredLocations.substring(1)-1);
             $("div[id='salvos" + loc1+loc2 +"']").addClass("salvoFired");
+            })
 
-            })}else if(salvoFired.player == playerIdOpponent){
+
+
+            }else if(salvoFired.player == playerIdOpponent){
             salvoFired.locations.forEach(function(salvoFiredLocations){
             var loc1 = salvoFiredLocations.charCodeAt(0)-65;
             var loc2 = parseInt(salvoFiredLocations.substring(1)-1);
@@ -386,11 +389,20 @@ if(isThereASalvo!=undefined){
                  $("div[id='ships" + loc1+loc2 +"']").addClass("shipSinking");
                  }
 
-            })}})}else{
+            })}})
+
+            }else{
             console.log("No hay salvos");
             }
 
-        document.getElementById("tableSunkShips").innerHTML=createTableSunkShips(gamesData);
+            gamesData.hits.opponent.map(e => e.hitLocations.forEach(function(salvoFiredLocations){
+            var loc1 = salvoFiredLocations.charCodeAt(0)-65;
+            var loc2 = parseInt(salvoFiredLocations.substring(1)-1);
+            $("div[id='salvos" + loc1+loc2 +"']").addClass("salvoWhichHitAShip");
+            }));
+
+        document.getElementById("tableSunkShips").innerHTML=createTableSunkShips(gamesData.hits.self);
+        document.getElementById("tableSunkShipsOpponent").innerHTML=createTableSunkShips(gamesData.hits.opponent);
         })
     .fail(function (jqXHR, textStatus) {
       alert("Failed: " + textStatus);
@@ -555,23 +567,57 @@ function addShip(){
 
 function createTableSunkShips(data){
 
-        data.hits.self.sort(function (a, b) {
-          if (a.turn < b.turn) {
-            return 1;
-          }
-          if (a.turn > b.turn) {
-            return -1;
-          }
-          // a must be equal to b
-          return 0;
-        });
+        data.sort(sortTable);
 
-        var tabla = data.hits.self.map(makeTable);
-        function makeTable(e){
-        var a = "<tr><td>" + e.turn+ "</td><td>Carrier ship: "+ haveShitsBeenHit(e.damages.carrierHits)+"</td><td>Battle ship: "+ haveShitsBeenHit(e.damages.battleshipHits)+"</td><td>Submarine ship: "+ haveShitsBeenHit(e.damages.submarineHits)+"</td><td>Destroyer ship: "+ haveShitsBeenHit(e.damages.destroyerHits)+"</td><td>Patrol boat ship: "+ haveShitsBeenHit(e.damages.patrolboatHits)+"</td></tr>";
-        return a}
-    return tabla;
+        var tabla = data.map(makeTable);
+
+        return tabla;
+
+
+
 }
+
+function makeTable(e){
+
+        var carrierShip = haveShitsBeenHit(e.damages.carrier);
+        var battleshipShip = haveShitsBeenHit(e.damages.battleship);
+        var subamrineShip =haveShitsBeenHit(e.damages.submarine);
+        var destroyerShip = haveShitsBeenHit(e.damages.destroyer);
+        var patrolBoatShip = haveShitsBeenHit(e.damages.patrolboat);
+
+    if(carrierShip == 5){
+    carrierShip = "Sunk!"
+    }
+    if(battleshipShip == 4){
+    battleshipShip = "Sunk!"
+    }
+    if(subamrineShip == 3){
+    subamrineShip = "Sunk!"
+    }
+    if (destroyerShip == 3){
+    destroyerShip= "Sunk!"
+    }
+    if (patrolBoatShip == 2){
+    patrolBoatShip = "Sunk!"
+    }
+
+
+        var a = "<tr><td>" + e.turn+ "</td><td>" + carrierShip +"</td><td>"+ battleshipShip +"</td><td>"+ subamrineShip +"</td><td>"+ destroyerShip +"</td><td>"+ patrolBoatShip +"</td></tr>";
+        return a
+        }
+
+
 function haveShitsBeenHit(barco){
 if(barco != 0){return barco}else{return "no hits!"}
 }
+
+function sortTable (a, b) {
+         if (a.turn < b.turn) {
+            return 1;
+         }
+         if (a.turn > b.turn) {
+         return -1;
+         }
+         // a must be equal to b
+         return 0;
+         }

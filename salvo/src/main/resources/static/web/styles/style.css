@@ -143,7 +143,7 @@
 background-color: red;
 }
 .salvoFired{
-background-color: white;
+background-color:  rgba(98,4,4);
 }
 .salvoFiredToYou{
 background-color: rgba(98,4,4);
@@ -172,6 +172,7 @@ background-color: rgba(255,255,255,0.2);
 }
 
 .salvoWhichHitAShip{
-background-image: url("explosion.jpg");
-background-color: red;
+background-image: url("explosion2.jpg");
+background-repeat: no-repeat;
+background-color: white;
 }

@@ -12,12 +12,6 @@ public class Ship {
     private long id;
     private String type;
 
-    public Map<String, Object> makeShipDTO(){
-        Map<String, Object> dto = new LinkedHashMap<>();
-        dto.put("type", this.getType());
-        dto.put("locations", this.getShipLocations());
-        return dto;
-    }
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="gamePlayerId")//Agregar columna con este nombre
@@ -26,7 +20,7 @@ public class Ship {
 
     @ElementCollection
     @Column(name="shipLocation")
-    private List<String> shipLocations;
+    private List<String> shipLocations = new ArrayList<>();
 
     public Ship() {
     }
@@ -64,4 +58,12 @@ public class Ship {
     public void setShipLocations(List<String> shipLocations) {
         this.shipLocations = shipLocations;
     }
+
+    public Map<String, Object> makeShipDTO(){
+        Map<String, Object> dto = new LinkedHashMap<>();
+        dto.put("type", this.getType());
+        dto.put("locations", this.getShipLocations());
+        return dto;
+    }
+
 }

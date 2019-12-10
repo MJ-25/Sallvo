@@ -69,6 +69,14 @@ public class Player {
         this.password = password;
     }
 
+    private Map<String,Object> mapaDePlayers(){
+        Map <String, Object> obj = new LinkedHashMap<>();
+        obj.put("idPlayer", this.getId());
+        obj.put("email", this.getUserName());
+        return obj;
+    }
+
+
     public Map<String, Object> makePlayerDetail() {
         Map<String, Object> dto = new LinkedHashMap<>();
         dto.put("Id", this.getId());

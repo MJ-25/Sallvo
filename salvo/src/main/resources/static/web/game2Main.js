@@ -401,8 +401,16 @@ if(isThereASalvo!=undefined){
             $("div[id='salvos" + loc1+loc2 +"']").addClass("salvoWhichHitAShip");
             }));
 
-        document.getElementById("tableSunkShips").innerHTML=createTableSunkShips(gamesData.hits.self);
+       /* document.getElementById("tableSunkShips").innerHTML=createTableSunkShips(gamesData.hits.self);
         document.getElementById("tableSunkShipsOpponent").innerHTML=createTableSunkShips(gamesData.hits.opponent);
+        console.log("My game: " + gamesData.hits.self[0]);
+        console.log("Opponent's game: " + gamesData.hits.opponent[0]);*/
+        })
+        .done(function(data){
+         document.getElementById("tableSunkShips").innerHTML=createTableSunkShips(gamesData.hits.self);
+         document.getElementById("tableSunkShipsOpponent").innerHTML=createTableSunkShips(gamesData.hits.opponent);
+         console.log("My game: " + gamesData.hits.self[0]);
+         console.log("Opponent's game: " + gamesData.hits.opponent[0]);
         })
     .fail(function (jqXHR, textStatus) {
       alert("Failed: " + textStatus);
@@ -472,15 +480,20 @@ var vertical = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"];
 function getTurn (){
   var arr=[]
   var turn = 0;
+  //For each salvo shot:
   gamesData.salvoes.map(function(salvo){
+  //If the player who fired the salvo is the same as the player who is playing, put that turn in an array
     if(salvo.player == playerId){
       arr.push(salvo.turn);
     }
   })
+  //Sort which turn is higher in the array
   turn = Math.max.apply(Math, arr);
 
+ //If there are no arguments (so turn equals to -Infinity), return 1. This works for when there are no salvos fired, so the first turn is number 1
   if (turn == -Infinity){
     return 1;
+  //Else, if there is a salvo, add 1 to the turn so the next turn will be the last number plus 1 (e.g. I've shot in turn 1, so now I will shoot in turn 2 (1+1))
   } else {
     return turn + 1;
   }
@@ -566,9 +579,9 @@ function addShip(){
 }
 
 function createTableSunkShips(data){
-
-        data.sort(sortTable);
-
+console.log(data);
+        data = data.sort(sortTable);
+console.log(data);
         var tabla = data.map(makeTable);
 
         return tabla;
@@ -608,8 +621,11 @@ function makeTable(e){
 
 
 function haveShitsBeenHit(barco){
-if(barco != 0){return barco}else{return "no hits!"}
-}
+if(barco != 0){
+return barco
+}else{
+return "no hits!"
+}}
 
 function sortTable (a, b) {
          if (a.turn < b.turn) {

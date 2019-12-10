@@ -24,22 +24,20 @@ public class GamePlayer {
     private Game game;
 
     @OneToMany(mappedBy="gamePlayer", fetch=FetchType.EAGER)
-    private List<Ship> ships;
+    private List<Ship> ships = new ArrayList<>();
 
-    @OneToMany(mappedBy = "gamePlayer", fetch = FetchType.EAGER)
-    private Set<Salvo> salvoes;
+    @OneToMany(mappedBy = "gamePlayer")
+    private List<Salvo> salvoes;
 
     public GamePlayer() {
-        this.ships  =   new ArrayList<>();
-        this.salvoes    =   new HashSet<>();
     }
 
     public GamePlayer(Player player, Game game) {
         this.joinTime = new Date();
         this.player = player;
         this.game = game;
-        this.ships  =   new ArrayList<>();
-        this.salvoes    =   new HashSet<>();
+        //this.ships  =   new LinkedHashSet<>();
+        //this.salvoes    =   new LinkedHashSet<>();
     }
 
 
@@ -75,11 +73,11 @@ public class GamePlayer {
     public void setShips(List<Ship> ships) { this.ships = ships; }
 
     @JsonIgnore
-    public Set<Salvo> getSalvoes() {
+    public List <Salvo> getSalvoes() {
         return salvoes;
     }
 
-    public void setSalvoes(Set<Salvo> salvoes) {
+    public void setSalvoes(List<Salvo> salvoes) {
         this.salvoes = salvoes;
     }
 
@@ -90,6 +88,67 @@ public class GamePlayer {
         return dto;
     }
 
+    public Map<String, Object> gameViewDto (){
+
+        GamePlayer opponent = this.GetOpponent();
+
+        Map<String, Object> dto = new LinkedHashMap<>();
+        dto.put("id de game", this.getGame().getId());
+        dto.put("gameState", this.getGameState(opponent));
+        dto.put("created", this.getGame().getGameTime());
+        dto.put("gamePlayers", this.getGame().getGamePlayers()
+                .stream()
+                .map(gamePlayer1 -> gamePlayer1.makeGamePlayerDTO())
+                .collect(Collectors.toList())
+        );
+        dto.put("ships", this.getShips()
+                .stream()
+                .map(ship1 -> ship1.makeShipDTO())
+                .collect(Collectors.toList())
+        );
+        dto.put("salvoes", this.getGame().getGamePlayers()
+                .stream()
+                //flatMap hace la misma función que map pero pone todos los elementos al mismo nivel (por ejemplo, un array con un solo objeto unido, en lugar de un array de varios objetos)
+                .flatMap(gamePlayer1 -> gamePlayer1.getSalvoes()
+                        .stream()
+                        .map(salvo -> salvo.makeSalvoDTO()))
+                .collect(Collectors.toList())
+        );
+        dto.put("hits", this.hitsDto(this,opponent));
+    return dto;
+
+    }
+
+
+    public String getGameState(GamePlayer opponent){
+        if(this.getShips().size() == 0){
+           return "PLACE SHIPS";
+        }
+
+        if(opponent.getShips().size() == 0){
+            return "WAITING FOR YOUR OPPONENT'S SHIPS";
+        }
+        if(this.getSalvoes().size()==0){
+            return "PLACE SALVOS";
+        }
+        if(opponent.getSalvoes().size()==0){
+            return "WAIT FOR YOUR OPPONENT'S SALVOS";
+        }
+        List <String> myShips = this.getShips().stream().flatMap(ship -> ship.getShipLocations().stream()).collect(Collectors.toList());
+        List <String> oppShips = opponent.getShips().stream().flatMap(ship -> ship.getShipLocations().stream()).collect(Collectors.toList());
+       List<String> mySalvos = this.getSalvoes().stream().flatMap(salvo -> salvo.getSalvoLocations().stream()).collect(Collectors.toList());;
+        // List <String> mySalvos = this.getSalvoes().stream().flatMap((salvoes.stream().filter(salvo -> salvo.getGamePlayer().getPlayer().getId() != opponent.getId()));
+        //List <String> oppSalvos = opponent.getSalvoes();
+
+
+        System.out.println(myShips);
+
+        /*if (oppSalvos.containsAll(myShips)){
+            return "GAME OVER";
+        }*/
+
+        return mySalvos.toString();
+    }
     public GamePlayer GetOpponent(){
         return this.getGame().getGamePlayers()
                 .stream()
@@ -104,22 +163,27 @@ public class GamePlayer {
         return dto;
     }
 
-    private List<Map> getHits(GamePlayer self,
+    private List<Map<String, Object>> getHits(GamePlayer self,
                               GamePlayer opponent){
-        List<Map> dto = new ArrayList<>();
 
+        //Crear una lista de maps llamada dto
+        List<Map<String, Object>> dto = new ArrayList<>();
+
+        //Inicializar las variables. Van a contar cuántos hits tienen los barcos en total en cada juego
         int carrierDamage = 0;
         int destroyerDamage = 0;
         int patrolboatDamage = 0;
         int submarineDamage = 0;
         int battleshipDamage = 0;
 
+        //Crear listas de arrays para las locations de los barcos
         List<String> carrierLocations = new ArrayList<>();
         List<String> destroyerLocations = new ArrayList<>();
         List<String> submarineLocations = new ArrayList<>();
         List<String> patrolboatLocations = new ArrayList<>();
         List<String> battleshipLocations = new ArrayList<>();
 
+        //Bring all the ships from self get the type and do the following: if the ship is a "carrier", put that location in "carrierLocations"
         for (Ship ship: self.getShips()) {
             switch (ship.getType()){
                 case "carrier":
@@ -139,6 +203,9 @@ public class GamePlayer {
                     break;
             }
         }
+
+        //Bring all the salvos from your opponent. Create variables for each ship that has been hit.
+        // Because these variables are inside the "for", they will initialize again for each salvo, so they only count the damage made in each turn to each ship
         for (Salvo salvo : opponent.getSalvoes()) {
             Integer carrierHitsInTurn = 0;
             Integer battleshipHitsInTurn = 0;
@@ -146,17 +213,24 @@ public class GamePlayer {
             Integer destroyerHitsInTurn = 0;
             Integer patrolboatHitsInTurn = 0;
 
+            //Create a variable to know how many locations of the salvos of your opponent have been missed
             Integer missedShots = salvo.getSalvoLocations().size();
 
+            //Create new variables (hits and damages)
             Map<String, Object> hitsMapPerTurn = new LinkedHashMap<>();
             Map<String, Object> damagesPerTurn = new LinkedHashMap<>();
             List<String> salvoLocationsList = new ArrayList<>();
             List<String> hitCellsList = new ArrayList<>();
 
+            //Put all the salvo locations in the variable "salvoLocationsList"
             salvoLocationsList.addAll(salvo.getSalvoLocations());
 
+
+            //For each element in salvoLocationsList (all the salvo locations), call it salvoShot and do the following:
             for (String salvoShot : salvoLocationsList) {
+                //If  the ship called carrier contains the locations of the salvoShot (e.g. The salvo shot is "H3" and your carrier ship locations are ["H1", "H2", "H3", "H4"])
                 if (carrierLocations.contains(salvoShot)) {
+                    //Add 1 to the variable carrierDamage (Total hits to ship). Add 1 to carrierHitsInTurn (Hits to that ship just in this turn). Add the locations of the salvoShot to hitCellsList. missedShots was 5 (the size of the locations of salvos). Given that the salvo has hit a ship, we substract 1 of missedShots
                     carrierDamage++;
                     carrierHitsInTurn++;
                     hitCellsList.add(salvoShot);
@@ -189,20 +263,32 @@ public class GamePlayer {
             }
 
 
+            //Hits to ships each turn
             damagesPerTurn.put("carrierHits", carrierHitsInTurn);
             damagesPerTurn.put("battleshipHits", battleshipHitsInTurn);
             damagesPerTurn.put("submarineHits", submarineHitsInTurn);
             damagesPerTurn.put("destroyerHits", destroyerHitsInTurn);
             damagesPerTurn.put("patrolboatHits", patrolboatHitsInTurn);
+
+            //Hits to ships during the whole game
             damagesPerTurn.put("carrier", carrierDamage);
             damagesPerTurn.put("battleship", battleshipDamage);
             damagesPerTurn.put("submarine", submarineDamage);
             damagesPerTurn.put("destroyer", destroyerDamage);
             damagesPerTurn.put("patrolboat", patrolboatDamage);
+
+            //Get turn in which the salvo was fired
             hitsMapPerTurn.put("turn", salvo.getTurn());
+
+            //Get the locations of where the salvos were fired
             hitsMapPerTurn.put("hitLocations", hitCellsList);
+
+            //Put all the damages (ships hit by turn and in total)
             hitsMapPerTurn.put("damages", damagesPerTurn);
+
+            //How many salvos missed a ship
             hitsMapPerTurn.put("missed", missedShots);
+
             dto.add(hitsMapPerTurn);
         }
 

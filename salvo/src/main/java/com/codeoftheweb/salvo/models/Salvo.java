@@ -22,7 +22,7 @@ private long turn;
 private List <String> salvoLocations;
 
 @ManyToOne (fetch = FetchType.EAGER)
-@JoinColumn(name = "gamePLayerId")
+@JoinColumn(name = "gamePlayerId")
 private GamePlayer gamePlayer;
 
     public Salvo() {

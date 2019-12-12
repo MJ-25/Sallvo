@@ -136,18 +136,27 @@ public class GamePlayer {
         }
         List <String> myShips = this.getShips().stream().flatMap(ship -> ship.getShipLocations().stream()).collect(Collectors.toList());
         List <String> oppShips = opponent.getShips().stream().flatMap(ship -> ship.getShipLocations().stream()).collect(Collectors.toList());
-       List<String> mySalvos = this.getSalvoes().stream().flatMap(salvo -> salvo.getSalvoLocations().stream()).collect(Collectors.toList());;
-        // List <String> mySalvos = this.getSalvoes().stream().flatMap((salvoes.stream().filter(salvo -> salvo.getGamePlayer().getPlayer().getId() != opponent.getId()));
-        //List <String> oppSalvos = opponent.getSalvoes();
+        List<String> mySalvos = this.getSalvoes().stream().flatMap(salvo -> salvo.getSalvoLocations().stream()).collect(Collectors.toList());;
+        List<String> oppSalvos = opponent.getSalvoes().stream().flatMap(salvo -> salvo.getSalvoLocations().stream()).collect(Collectors.toList());;
 
+        Boolean iWin = mySalvos.containsAll(oppShips);
+        Boolean oppWins = oppSalvos.containsAll(myShips);
 
-        System.out.println(myShips);
+        if (mySalvos.size() == oppSalvos.size()){
+            if(iWin && oppWins){
+            return "TIE";
+            }
+        }
 
-        /*if (oppSalvos.containsAll(myShips)){
+        if (oppWins){
             return "GAME OVER";
-        }*/
+        }
 
-        return mySalvos.toString();
+        if (iWin){
+            return "GAME WON";
+        }
+
+        return oppSalvos.toString();
     }
     public GamePlayer GetOpponent(){
         return this.getGame().getGamePlayers()

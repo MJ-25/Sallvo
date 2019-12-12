@@ -52,14 +52,14 @@ function loadGrid(isStatic) {
 
   //Inicializo los listenener para rotar los barcos, el numero del segundo argumento
   //representa la cantidad de celdas que ocupa tal barco
-  rotateShips("carrier", 5)
+  /*rotateShips("carrier", 5)
   rotateShips("battleship", 4)
   rotateShips("submarine", 3)
   rotateShips("destroyer", 3)
   rotateShips("patrol_boat", 2)
 
   listenBusyCells('ships')
-  $('.grid-stack').on('change', () => listenBusyCells('ships'))
+  $('.grid-stack').on('change', () => listenBusyCells('ships'))*/
 
 }
 
@@ -165,7 +165,7 @@ const createGrid = function (size, element, id) {
 /*manejador de evento para rotar los barcos, el mismo se ejecuta al hacer click
 sobre un barco
 function(tipoDeBarco, celda)*/
-const rotateShips = function (shipType, cells) {
+const rotateShips = function(shipType, cells) {
 
   $(`#${shipType}`).click(function () {
     document.getElementById("alert-text").innerHTML = `Rotaste: ${shipType}`
@@ -320,10 +320,20 @@ function loadData() {
         grid.addWidget($('<div id="destroyer"><div class="grid-stack-item-content destroyerHorizontal"></div><div/>'),
           7, 8, 3, 1);
 
+          rotateShips("carrier", 5)
+            rotateShips("battleship", 4)
+            rotateShips("submarine", 3)
+            rotateShips("destroyer", 3)
+            rotateShips("patrol_boat", 2)
+
+            listenBusyCells('ships')
+            $('.grid-stack').on('change', () => listenBusyCells('ships'))
+
       } else {
             loadGrid(true)
 
-
+        listenBusyCells('ships')
+        $('.grid-stack').on('change', () => listenBusyCells('ships'))
         console.log("There are ships: " + isThereAShip);
         $("#saveShips").hide();
         $(".grid-salvos").show();
@@ -355,7 +365,7 @@ function loadData() {
           }
           type = ship.type;
           grid.addWidget($('<div id="' + type + '"><div class="grid-stack-item-content ' + type + orientacion + '"></div><div/>'),
-            arrayEjeX[0], arrayEjeY[1], width, height);
+            arrayEjeX[0], arrayEjeY[0], width, height);
         });
 
       }
@@ -411,6 +421,14 @@ if(isThereASalvo!=undefined){
          document.getElementById("tableSunkShipsOpponent").innerHTML=createTableSunkShips(gamesData.hits.opponent);
          console.log("My game: " + gamesData.hits.self[0]);
          console.log("Opponent's game: " + gamesData.hits.opponent[0]);
+         if(gamesData.gameState == "TIE"){
+         window.alert("It's a tie")
+         }
+         if(gamesData.gameState == "GAME OVER"){
+         window.alert("You have lost!!")
+         }else if (gamesData.gameState == "GAME WON"){
+         window.alert("You have won!!")
+         }
         })
     .fail(function (jqXHR, textStatus) {
       alert("Failed: " + textStatus);

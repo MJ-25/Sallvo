@@ -6,6 +6,7 @@ import com.codeoftheweb.salvo.repositories.GameRepository;
 //import com.sun.tools.javac.code.Scope;
 import com.codeoftheweb.salvo.repositories.PlayerRepository;
 import com.codeoftheweb.salvo.repositories.ScoreRepository;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +23,9 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping ("/api")
 public class AppController {
+
+        @Autowired
+        private ScoreRepository scoreRepository;
 
         @Autowired
         private GameRepository gameRepository;
@@ -69,8 +73,11 @@ private Map<String, Object> mapaDeGames(Game e){
     return obj;
 }
 
-private List<Object> getGamePlayersDetail(List<GamePlayer> o){
-    return o.stream().map(n-> mapaDeGamePlayers(n)).collect(Collectors.toList());
+private List<Object> getGamePlayersDetail(Set<GamePlayer> o){
+    return o.stream()
+            .sorted(Comparator.comparing(GamePlayer::getId))
+            .map(n-> mapaDeGamePlayers(n))
+            .collect(Collectors.toList());
 }
 
 
@@ -98,7 +105,7 @@ private Map<String,Object> mapaDePlayers(Player n){
         if (gamePlayer.getPlayer() == newPlayer) {
 
 
-            ResponseEntity<Map<String,Object>> nuevaResponseEntity = new ResponseEntity<Map<String, Object>>(gamePlayer.gameViewDto(), HttpStatus.ACCEPTED);
+            ResponseEntity<Map<String,Object>> nuevaResponseEntity = new ResponseEntity<Map<String, Object>>(gameViewDto(gamePlayer), HttpStatus.ACCEPTED);
 
             return nuevaResponseEntity;
         }else{
@@ -145,7 +152,7 @@ private Map<String,Object> mapaDePlayers(Player n){
         //The return finishes the "if" so you can create a new one.
 
         Player newJoinPlayer = playerRepository.findByUserName(authentication.getName()).orElse(null);
-        Game newJoinGame = gameRepository.getOne(id);
+        Game newJoinGame = gameRepository.findById(id).orElse(null);
 
         //Create a new game named newJoinGame. Assign the value of the game in gameRepository that has the same id as the one passed by parameter {id}. If you can't find the game, assign thee value "null"
         //Game newJoinGame = gameRepository.findById(id).orElse(null);
@@ -161,7 +168,7 @@ private Map<String,Object> mapaDePlayers(Player n){
 
         //If the size of the list of gamePlayers of newJoinGame is larger or equal than 2, return an error that tells you that the game is full. You can't join it
         if(newJoinGame.getGamePlayers().size() >= 2){
-            return new ResponseEntity<>(createMap("error game full ","Game is already full"), HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(createMap("error game full ",newJoinGame), HttpStatus.FORBIDDEN);
         }
         //Create a new Player named newJoinPlayer. Assign the value of the player in repository that has the same name as the name in authentication
         //Player newJoinPlayer = playerRepository.findByUserName(authentication.getName()).get();
@@ -193,6 +200,112 @@ private Map<String,Object> mapaDePlayers(Player n){
     }
 
 
+
+    public Map<String, Object> gameViewDto (GamePlayer gamePlayer){
+
+        GamePlayer opponent = this.GetOpponent(gamePlayer);
+
+        Map<String, Object> dto = new LinkedHashMap<>();
+        dto.put("id de game", gamePlayer.getGame().getId());
+        dto.put("gameState", getGameState(gamePlayer,opponent));
+        dto.put("created", gamePlayer.getGame().getGameTime());
+        dto.put("gamePlayers", gamePlayer.getGame().getGamePlayers()
+                .stream()
+                .sorted(Comparator.comparing(GamePlayer::getId))
+                .map(gamePlayer1 -> gamePlayer1.makeGamePlayerDTO())
+                .collect(Collectors.toList())
+        );
+        dto.put("ships", gamePlayer.getShips()
+                .stream()
+                .map(ship1 -> ship1.makeShipDTO())
+                .collect(Collectors.toList())
+        );
+        dto.put("salvoes", gamePlayer.getGame().getGamePlayers()
+                .stream()
+                //flatMap hace la misma función que map pero pone todos los elementos al mismo nivel (por ejemplo, un array con un solo objeto unido, en lugar de un array de varios objetos)
+                .flatMap(gamePlayer1 -> gamePlayer1.getSalvoes()
+                        .stream()
+                        .sorted(Comparator.comparing(Salvo::getTurn))
+                        .map(salvo -> salvo.makeSalvoDTO()))
+                .collect(Collectors.toList())
+        );
+        dto.put("hits", gamePlayer.hitsDto(gamePlayer,opponent));
+        return dto;
+
+    }
+
+
+    private String getGameState(GamePlayer gamePlayer, GamePlayer opponent){
+        if(gamePlayer.getShips().size() == 0){
+            return "Place ships";
+        }
+
+        if(opponent.getShips().size() == 0){
+            return "Waiting for your opponent's ships";
+        }
+        if(gamePlayer.getSalvoes().size()==0){
+            return "Place salvos";
+        }
+        if(opponent.getSalvoes().size()==0){
+            return "Waiting for your opponent's salvos";
+        }
+        List <String> myShips = gamePlayer.getShips().stream().flatMap(ship -> ship.getShipLocations().stream()).collect(Collectors.toList());
+        List <String> oppShips = opponent.getShips().stream().flatMap(ship -> ship.getShipLocations().stream()).collect(Collectors.toList());
+        List<String> mySalvos = gamePlayer.getSalvoes().stream().flatMap(salvo -> salvo.getSalvoLocations().stream()).collect(Collectors.toList());;
+        List<String> oppSalvos = opponent.getSalvoes().stream().flatMap(salvo -> salvo.getSalvoLocations().stream()).collect(Collectors.toList());;
+
+        Boolean iWin = mySalvos.containsAll(oppShips);
+        Boolean oppWins = oppSalvos.containsAll(myShips);
+
+        if (mySalvos.size() == oppSalvos.size()) {
+            Game game = gamePlayer.getGame();
+            Player player = gamePlayer.getPlayer();
+
+            if (iWin && oppWins) {
+                Score score = new Score(0.5, game, player);
+                scoreRepository.save(score);
+                return "TIE";
+            }
+
+            if (oppWins) {
+                Score score = new Score(0, game, player);
+                scoreRepository.save(score);
+                return "LOST";
+            }
+
+            if (iWin) {
+                Score score = new Score(1, game, player);
+                scoreRepository.save(score);
+                return "WON";
+            }
+        }
+        if(isTheSameTurn(gamePlayer,opponent)){
+            return "Place your salvos";
+        }
+        return "Wait for your opponent";
+    }
+
+    private Boolean isTheSameTurn (GamePlayer gamePlayer, GamePlayer opponent){
+    int mySalvos = gamePlayer.getSalvoes().size();
+    int oppSalvos = opponent.getSalvoes().size();
+
+    //If my salvos are the same as my opponent, we are in the same turn (true)
+    if(mySalvos == oppSalvos){
+        return true;
+    }
+    //If there is only a difference of one salvo with my opponent, I can still play
+    if (mySalvos - oppSalvos == 1 || oppSalvos-mySalvos == 1){
+    return false;
+    //If the difference is larger, then that's a problem
+    }return false;
+    }
+
+    public GamePlayer GetOpponent(GamePlayer gamePlayer){
+        return gamePlayer.getGame().getGamePlayers()
+                .stream()
+                .filter(opponent -> gamePlayer.getId() != opponent.getId())
+                .findFirst().orElse(new GamePlayer());
+    }
 
 
 

@@ -10,7 +10,7 @@ $(function () {
 all the functionalities are explained in the gridstack github
 https://github.com/gridstack/gridstack.js/tree/develop/doc
 */
-var howManyShips=0;
+var howManyShips = 0;
 //$(() => loadGrid())
 //Función principal que dispara el frame gridstack.js y carga la matriz con los barcos
 function loadGrid(isStatic) {
@@ -43,43 +43,27 @@ function loadGrid(isStatic) {
 
   grid = $('#grid').data('gridstack');
 
-
-
-
   //createGrid construye la estructura de la matriz
   createGrid(11, $(".grid-ships"), 'ships')
   createGrid(11, $(".grid-salvos"), 'salvos')
 
-  //Inicializo los listenener para rotar los barcos, el numero del segundo argumento
-  //representa la cantidad de celdas que ocupa tal barco
-  /*rotateShips("carrier", 5)
-  rotateShips("battleship", 4)
-  rotateShips("submarine", 3)
-  rotateShips("destroyer", 3)
-  rotateShips("patrol_boat", 2)
-
-  listenBusyCells('ships')
-  $('.grid-stack').on('change', () => listenBusyCells('ships'))*/
-
 }
 
-
+//Function to create salvos
 //Llamar a los divs cuyo id sea salvo (el acento circunflejo es para decir que lo que siga después de esa palabra no importa, por ej. podría ser id=salvo01)
 // y cuya clase sea grid-cell y ponerle la función click a cada una de esas celdas
 var contador = 0;
-function createSalvos(){
-$('div[id^="salvos"].grid-cell').click(function(event){
-console.log("hola");
-console.log(event.target);
-//.target-cell-length
-if(!$(event.target).hasClass("target") && !$(event.target).hasClass("salvoFired") && contador<5){
-$(event.target).addClass("target");
-contador ++;
-}else if ($(event.target).hasClass("target")){
-$(event.target).removeClass("target");
-contador --;
-}
-})
+
+function createSalvos() {
+  $('div[id^="salvos"].grid-cell').click(function (event) {
+    if (!$(event.target).hasClass("target") && !$(event.target).hasClass("salvoFired") && contador < 5) {
+      $(event.target).addClass("target");
+      contador++;
+    } else if ($(event.target).hasClass("target")) {
+      $(event.target).removeClass("target");
+      contador--;
+    }
+  })
 }
 
 
@@ -165,7 +149,7 @@ const createGrid = function (size, element, id) {
 /*manejador de evento para rotar los barcos, el mismo se ejecuta al hacer click
 sobre un barco
 function(tipoDeBarco, celda)*/
-const rotateShips = function(shipType, cells) {
+const rotateShips = function (shipType, cells) {
 
   $(`#${shipType}`).click(function () {
     document.getElementById("alert-text").innerHTML = `Rotaste: ${shipType}`
@@ -280,30 +264,28 @@ function loadData() {
       let playerInfo;
       if (data.gamePlayers[0].id == getParameterByName('gp')) {
         playerInfo = [data.gamePlayers[0].player.email, data.gamePlayers[1].player.email];
-        playerId=data.gamePlayers[0].player.Id;
-        playerIdOpponent=data.gamePlayers[1].player.Id;
+        playerId = data.gamePlayers[0].player.Id;
+        playerIdOpponent = data.gamePlayers[1].player.Id;
       } else {
         playerInfo = [data.gamePlayers[1].player.email, data.gamePlayers[0].player.email];
-        playerId=data.gamePlayers[1].player.Id;
-        playerIdOpponent=data.gamePlayers[0].player.Id;
+        playerId = data.gamePlayers[1].player.Id;
+        playerIdOpponent = data.gamePlayers[0].player.Id;
       }
 
       $('#playerInfo').text(playerInfo[0] + '(you) vs ' + playerInfo[1]);
 
-
+      chequearUsuario(data.player.email);
 
       isThereAShip = data.ships[0];
       howManyShips = data.ships.length;
       isThereASalvo = data.salvoes[0];
 
-
-
-
-      if (isThereAShip == undefined ) {
-      loadGrid(false)
-      $("#saveShips").show();
-      $("#saveSalvos").hide();
-      $(".grid-salvos").hide();
+      //If there are no ships, then put them in an arbitrary position so the player can move them and show button "save ships"
+      if (isThereAShip == undefined) {
+        loadGrid(false)
+        $("#saveShips").show();
+        $("#saveSalvos").hide();
+        $(".grid-salvos").hide();
         console.log("There are no ships: " + isThereAShip);
         grid.addWidget($('<div id="patrol_boat"><div class="grid-stack-item-content patrol_boatHorizontal"></div><div/>'),
           0, 1, 2, 1);
@@ -320,17 +302,18 @@ function loadData() {
         grid.addWidget($('<div id="destroyer"><div class="grid-stack-item-content destroyerHorizontal"></div><div/>'),
           7, 8, 3, 1);
 
-          rotateShips("carrier", 5)
-            rotateShips("battleship", 4)
-            rotateShips("submarine", 3)
-            rotateShips("destroyer", 3)
-            rotateShips("patrol_boat", 2)
+        rotateShips("carrier", 5)
+        rotateShips("battleship", 4)
+        rotateShips("submarine", 3)
+        rotateShips("destroyer", 3)
+        rotateShips("patrol_boat", 2)
 
-            listenBusyCells('ships')
-            $('.grid-stack').on('change', () => listenBusyCells('ships'))
+        listenBusyCells('ships')
+        $('.grid-stack').on('change', () => listenBusyCells('ships'))
 
+        //If there are ships, then load them in the correct position, don't let them move and show button "create salvos"
       } else {
-            loadGrid(true)
+        loadGrid(true)
 
         listenBusyCells('ships')
         $('.grid-stack').on('change', () => listenBusyCells('ships'))
@@ -370,71 +353,72 @@ function loadData() {
 
       }
 
-       createSalvos();
+      createSalvos();
 
 
 
+      //If there are no salvos, then create them and add them classes to be able to change them using css
+      if (isThereASalvo != undefined) {
+        data.salvoes.forEach(function (salvoFired) {
 
-if(isThereASalvo!=undefined){
-          data.salvoes.forEach(function(salvoFired){
 
-
-            if(salvoFired.player == playerId){
-            salvoFired.locations.forEach(function(salvoFiredLocations){
-            var loc1 = salvoFiredLocations.charCodeAt(0)-65;
-            var loc2 = parseInt(salvoFiredLocations.substring(1)-1);
-            $("div[id='salvos" + loc1+loc2 +"']").addClass("salvoFired");
+          if (salvoFired.player == playerId) {
+            salvoFired.locations.forEach(function (salvoFiredLocations) {
+              var loc1 = salvoFiredLocations.charCodeAt(0) - 65;
+              var loc2 = parseInt(salvoFiredLocations.substring(1) - 1);
+              $("div[id='salvos" + loc1 + loc2 + "']").addClass("salvoFired");
             })
 
 
+            //If there are salvos, show the salvos fired to you, the salvos you fired and which salvo has hit a target
+          } else if (salvoFired.player == playerIdOpponent) {
+            salvoFired.locations.forEach(function (salvoFiredLocations) {
+              var loc1 = salvoFiredLocations.charCodeAt(0) - 65;
+              var loc2 = parseInt(salvoFiredLocations.substring(1) - 1);
 
-            }else if(salvoFired.player == playerIdOpponent){
-            salvoFired.locations.forEach(function(salvoFiredLocations){
-            var loc1 = salvoFiredLocations.charCodeAt(0)-65;
-            var loc2 = parseInt(salvoFiredLocations.substring(1)-1);
+              $("div[id='ships" + loc1 + loc2 + "']").addClass("salvoFiredToYou");
 
-            $("div[id='ships" + loc1+loc2 +"']").addClass("salvoFiredToYou");
+              if ($("div[id='ships" + loc1 + loc2 + "']").hasClass("salvoFiredToYou") && !$("div[id='ships" + loc1 + loc2 + "']").hasClass("empty-cell")) {
+                $("div[id='ships" + loc1 + loc2 + "']").addClass("shipSinking");
+              }
 
-             if( $("div[id='ships" + loc1+loc2 +"']").hasClass("salvoFiredToYou") && !$("div[id='ships" + loc1+loc2 +"']").hasClass("empty-cell")){
-                 $("div[id='ships" + loc1+loc2 +"']").addClass("shipSinking");
-                 }
-
-            })}})
-
-            }else{
-            console.log("No hay salvos");
-            }
-
-            gamesData.hits.opponent.map(e => e.hitLocations.forEach(function(salvoFiredLocations){
-            var loc1 = salvoFiredLocations.charCodeAt(0)-65;
-            var loc2 = parseInt(salvoFiredLocations.substring(1)-1);
-            $("div[id='salvos" + loc1+loc2 +"']").addClass("salvoWhichHitAShip");
-            }));
-
-       /* document.getElementById("tableSunkShips").innerHTML=createTableSunkShips(gamesData.hits.self);
-        document.getElementById("tableSunkShipsOpponent").innerHTML=createTableSunkShips(gamesData.hits.opponent);
-        console.log("My game: " + gamesData.hits.self[0]);
-        console.log("Opponent's game: " + gamesData.hits.opponent[0]);*/
+            })
+          }
         })
-        .done(function(data){
-         document.getElementById("tableSunkShips").innerHTML=createTableSunkShips(gamesData.hits.self);
-         document.getElementById("tableSunkShipsOpponent").innerHTML=createTableSunkShips(gamesData.hits.opponent);
-         console.log("My game: " + gamesData.hits.self[0]);
-         console.log("Opponent's game: " + gamesData.hits.opponent[0]);
-         if(gamesData.gameState == "TIE"){
-         window.alert("It's a tie")
-         }
-         if(gamesData.gameState == "GAME OVER"){
-         window.alert("You have lost!!")
-         }else if (gamesData.gameState == "GAME WON"){
-         window.alert("You have won!!")
-         }
-        })
+
+      } else {
+        console.log("No hay salvos");
+      }
+
+      gamesData.hits.opponent.map(e => e.hitLocations.forEach(function (salvoFiredLocations) {
+        var loc1 = salvoFiredLocations.charCodeAt(0) - 65;
+        var loc2 = parseInt(salvoFiredLocations.substring(1) - 1);
+        $("div[id='salvos" + loc1 + loc2 + "']").addClass("salvoWhichHitAShip");
+      }));
+    })
+    //Function to ask for the state of the game and create the table of shipa hit
+    .done(function (data) {
+      $("#state").text(gamesData.gameState);
+      document.getElementById("tableSunkShips").innerHTML = createTableSunkShips(gamesData.hits.self);
+      document.getElementById("tableSunkShipsOpponent").innerHTML = createTableSunkShips(gamesData.hits.opponent);
+      if (gamesData.gameState == "TIE") {
+        window.alert("It's a tie")
+        window.location.replace("http://localhost:8080/web/games2.html");
+      }
+      if (gamesData.gameState == "LOST") {
+        window.alert("You have lost!!")
+        window.location.replace("http://localhost:8080/web/games2.html");
+      } else if (gamesData.gameState == "WON") {
+        window.alert("You have won!!")
+        window.location.replace("http://localhost:8080/web/games2.html");
+      }
+    })
     .fail(function (jqXHR, textStatus) {
       alert("Failed: " + textStatus);
     });
 };
 
+/*//Function to
 function loadDataDos() {
   fetch("/api/games").then(function (response) {
       if (response.ok) {
@@ -447,7 +431,7 @@ function loadDataDos() {
     .catch(function (error) {
       console.log("Request failed: " + error.status);
     });
-}
+}*/
 
 //Función para que cuando actualice la página no vuelva a aparecer el log in si el usuario ya está loggeado
 function chequearUsuario(usuario) {
@@ -471,66 +455,46 @@ function logout(evt) {
 }
 
 
-//Function to create new ships
-/*function createShips(gpid, newType, newShipLocation) {
-  $.post({
-      url: "/api/games/players/" + gpid + "/ships",
-      data: JSON.stringify([{
-        type: newType,
-        shipLocations: newShipLocation
-      }]),
-      dataType: "text",
-      contentType: "application/json"
-    })
-    .done(function (response, status, jqXHR) {
-      alert("Ships added: " + response);
-      window.location.reload();
-    })
-    .fail(function (jqXHR, status, httpError) {
-      alert("Failed to add ship: " + httpError);
-    })
-}*/
-
 var horizontal = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 var vertical = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"];
 
-
-function getTurn (){
-  var arr=[]
+//Function to get the turn of the game
+function getTurn() {
+  var arr = []
   var turn = 0;
   //For each salvo shot:
-  gamesData.salvoes.map(function(salvo){
-  //If the player who fired the salvo is the same as the player who is playing, put that turn in an array
-    if(salvo.player == playerId){
+  gamesData.salvoes.map(function (salvo) {
+    //If the player who fired the salvo is the same as the player who is playing, put that turn in an array
+    if (salvo.player == playerId) {
       arr.push(salvo.turn);
     }
   })
   //Sort which turn is higher in the array
   turn = Math.max.apply(Math, arr);
 
- //If there are no arguments (so turn equals to -Infinity), return 1. This works for when there are no salvos fired, so the first turn is number 1
-  if (turn == -Infinity){
+  //If there are no arguments (so turn equals to -Infinity), return 1. This works for when there are no salvos fired, so the first turn is number 1
+  if (turn == -Infinity) {
     return 1;
-  //Else, if there is a salvo, add 1 to the turn so the next turn will be the last number plus 1 (e.g. I've shot in turn 1, so now I will shoot in turn 2 (1+1))
+    //Else, if there is a salvo, add 1 to the turn so the next turn will be the last number plus 1 (e.g. I've shot in turn 1, so now I will shoot in turn 2 (1+1))
   } else {
     return turn + 1;
   }
 
 }
 
+//Function to save the salvos through post
+function saveSalvos() {
+  var turn = getTurn();
+  var salvoPositions = [];
+  $(".target").each(function () {
+    var locations = $(this).attr("id").substring(6);
+    var locationConverted = String.fromCharCode(parseInt(locations[0]) + 65) + (parseInt(locations[1]) + 1);
+    salvoPositions.push(locationConverted);
+  })
 
-function saveSalvos (){
-var turn = getTurn();
-var salvoPositions  = [];
-$(".target").each(function(){
-var locations = $(this).attr("id").substring(6);
-var locationConverted = String.fromCharCode(parseInt(locations[0]) + 65) + (parseInt(locations[1]) + 1);
-salvoPositions.push(locationConverted);
-})
+  console.log("Salvo positions: " + salvoPositions + " and turn: " + turn);
 
-console.log("Salvo positions: " + salvoPositions + " and turn: " + turn);
-
-$.post({
+  $.post({
       url: "/api/games/players/" + getParameterByName('gp') + "/salvos",
       data: JSON.stringify({
         salvoLocations: salvoPositions
@@ -547,111 +511,116 @@ $.post({
     })
 }
 
+//Function to get the position of the saved ships
 const obtenerPosicion = function (shipType) {
-    var ship = new Object();
-    ship["name"] = $("#" + shipType).attr('id');
-    ship["x"] = $("#" + shipType).attr('data-gs-x');
-    ship["y"] = $("#" + shipType).attr('data-gs-y');
-    ship["width"] = $("#" + shipType).attr('data-gs-width');
-    ship["height"] = $("#" + shipType).attr('data-gs-height');
-    ship["positions"] = [];
-    if (ship.height == 1) {
-        for (i = 1; i <= ship.width; i++) {
-            ship.positions.push(String.fromCharCode(parseInt(ship.y) + 65) + (parseInt(ship.x) + i))
-        }
-    } else {
-        for (i = 0; i < ship.height; i++) {
-            ship.positions.push(String.fromCharCode(parseInt(ship.y) + 65 + i) + (parseInt(ship.x) + 1))
-        }
+  var ship = new Object();
+  ship["name"] = $("#" + shipType).attr('id');
+  ship["x"] = $("#" + shipType).attr('data-gs-x');
+  ship["y"] = $("#" + shipType).attr('data-gs-y');
+  ship["width"] = $("#" + shipType).attr('data-gs-width');
+  ship["height"] = $("#" + shipType).attr('data-gs-height');
+  ship["positions"] = [];
+  if (ship.height == 1) {
+    for (i = 1; i <= ship.width; i++) {
+      ship.positions.push(String.fromCharCode(parseInt(ship.y) + 65) + (parseInt(ship.x) + i))
     }
-    var objShip = new Object();
-    objShip["type"] = ship.name;
-    objShip["shipLocations"] = ship.positions;
-    return objShip;
+  } else {
+    for (i = 0; i < ship.height; i++) {
+      ship.positions.push(String.fromCharCode(parseInt(ship.y) + 65 + i) + (parseInt(ship.x) + 1))
+    }
+  }
+  var objShip = new Object();
+  objShip["type"] = ship.name;
+  objShip["shipLocations"] = ship.positions;
+  return objShip;
 }
 
-function addShip(){
-        var carrier = obtenerPosicion("carrier")
-        var patrol = obtenerPosicion("patrol_boat")
-        var battleship = obtenerPosicion("battleship")
-        var submarine = obtenerPosicion("submarine")
-        var destroyer = obtenerPosicion("destroyer")
-        console.log(carrier);
-        $.post({
-          url: "/api/games/players/"+getParameterByName('gp')+"/ships",
-          data: JSON.stringify([carrier,patrol,battleship, submarine,destroyer]),
-          dataType: "text",
-          contentType: "application/json"
-        })
-        /*.done(function(){
-        saveSalvos();
-        })*/
-        .done(function (response, status, jqXHR) {
+//Function to add a new ship
+function addShip() {
+  var carrier = obtenerPosicion("carrier")
+  var patrol = obtenerPosicion("patrol_boat")
+  var battleship = obtenerPosicion("battleship")
+  var submarine = obtenerPosicion("submarine")
+  var destroyer = obtenerPosicion("destroyer")
+  console.log(carrier);
+  $.post({
+      url: "/api/games/players/" + getParameterByName('gp') + "/ships",
+      data: JSON.stringify([carrier, patrol, battleship, submarine, destroyer]),
+      dataType: "text",
+      contentType: "application/json"
+    })
+    /*.done(function(){
+    saveSalvos();
+    })*/
+    .done(function (response, status, jqXHR) {
 
-          alert( "Ships added: " + response );
-          window.location.reload();
-        })
-        .fail(function (jqXHR, status, httpError) {
-          alert("Failed to add ship: " + status + " " + httpError);
-        })
+      alert("Ships added: " + response);
+      window.location.reload();
+    })
+    .fail(function (jqXHR, status, httpError) {
+      alert("Failed to add ship: " + status + " " + httpError);
+    })
 }
 
-function createTableSunkShips(data){
-console.log(data);
-        data = data.sort(sortTable);
-console.log(data);
-        var tabla = data.map(makeTable);
+//Function to create the table that shows which ships have been hit/sunk
+function createTableSunkShips(data) {
+  console.log(data);
+  data = data.sort(sortTable);
+  console.log(data);
+  var tabla = data.map(makeTable);
 
-        return tabla;
+  return tabla;
 
 
 
 }
 
-function makeTable(e){
+//Make the table of hit ships
+function makeTable(e) {
 
-        var carrierShip = haveShitsBeenHit(e.damages.carrier);
-        var battleshipShip = haveShitsBeenHit(e.damages.battleship);
-        var subamrineShip =haveShitsBeenHit(e.damages.submarine);
-        var destroyerShip = haveShitsBeenHit(e.damages.destroyer);
-        var patrolBoatShip = haveShitsBeenHit(e.damages.patrolboat);
+  var carrierShip = haveShitsBeenHit(e.damages.carrier);
+  var battleshipShip = haveShitsBeenHit(e.damages.battleship);
+  var subamrineShip = haveShitsBeenHit(e.damages.submarine);
+  var destroyerShip = haveShitsBeenHit(e.damages.destroyer);
+  var patrolBoatShip = haveShitsBeenHit(e.damages.patrolboat);
 
-    if(carrierShip == 5){
+  if (carrierShip == 5) {
     carrierShip = "Sunk!"
-    }
-    if(battleshipShip == 4){
+  }
+  if (battleshipShip == 4) {
     battleshipShip = "Sunk!"
-    }
-    if(subamrineShip == 3){
+  }
+  if (subamrineShip == 3) {
     subamrineShip = "Sunk!"
-    }
-    if (destroyerShip == 3){
-    destroyerShip= "Sunk!"
-    }
-    if (patrolBoatShip == 2){
+  }
+  if (destroyerShip == 3) {
+    destroyerShip = "Sunk!"
+  }
+  if (patrolBoatShip == 2) {
     patrolBoatShip = "Sunk!"
-    }
+  }
 
 
-        var a = "<tr><td>" + e.turn+ "</td><td>" + carrierShip +"</td><td>"+ battleshipShip +"</td><td>"+ subamrineShip +"</td><td>"+ destroyerShip +"</td><td>"+ patrolBoatShip +"</td></tr>";
-        return a
-        }
+  var a = "<tr><td>" + e.turn + "</td><td>" + carrierShip + "</td><td>" + battleshipShip + "</td><td>" + subamrineShip + "</td><td>" + destroyerShip + "</td><td>" + patrolBoatShip + "</td></tr>";
+  return a
+}
 
 
-function haveShitsBeenHit(barco){
-if(barco != 0){
-return barco
-}else{
-return "no hits!"
-}}
+function haveShitsBeenHit(barco) {
+  if (barco != 0) {
+    return barco
+  } else {
+    return "no hits!"
+  }
+}
 
-function sortTable (a, b) {
-         if (a.turn < b.turn) {
-            return 1;
-         }
-         if (a.turn > b.turn) {
-         return -1;
-         }
-         // a must be equal to b
-         return 0;
-         }
+function sortTable(a, b) {
+  if (a.turn < b.turn) {
+    return 1;
+  }
+  if (a.turn > b.turn) {
+    return -1;
+  }
+  // a must be equal to b
+  return 0;
+}

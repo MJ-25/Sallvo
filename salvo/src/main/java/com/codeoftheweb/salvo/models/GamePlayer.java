@@ -36,8 +36,6 @@ public class GamePlayer {
         this.joinTime = new Date();
         this.player = player;
         this.game = game;
-        //this.ships  =   new LinkedHashSet<>();
-        //this.salvoes    =   new LinkedHashSet<>();
     }
 
 
@@ -70,25 +68,22 @@ public class GamePlayer {
     @JsonIgnore
     public List<Ship> getShips() { return ships; }
 
-    public void setShips(List<Ship> ships) { this.ships = ships; }
 
     @JsonIgnore
     public List <Salvo> getSalvoes() {
         return salvoes;
     }
 
-    public void setSalvoes(List<Salvo> salvoes) {
-        this.salvoes = salvoes;
-    }
+
 
     public Map<String,Object> makeGamePlayerDTO(){
         Map<String, Object> dto = new LinkedHashMap<>();
         dto.put("id", this.getId());
-        dto.put("player", getPlayer().makePlayerDetail());
+        dto.put("player", this.getPlayer().makePlayerDetail());
         return dto;
     }
 
-    public Map<String, Object> gameViewDto (){
+   /* public Map<String, Object> gameViewDto (){
 
         GamePlayer opponent = this.GetOpponent();
 
@@ -98,6 +93,7 @@ public class GamePlayer {
         dto.put("created", this.getGame().getGameTime());
         dto.put("gamePlayers", this.getGame().getGamePlayers()
                 .stream()
+                .sorted(Comparator.comparing(GamePlayer::getId))
                 .map(gamePlayer1 -> gamePlayer1.makeGamePlayerDTO())
                 .collect(Collectors.toList())
         );
@@ -111,6 +107,7 @@ public class GamePlayer {
                 //flatMap hace la misma función que map pero pone todos los elementos al mismo nivel (por ejemplo, un array con un solo objeto unido, en lugar de un array de varios objetos)
                 .flatMap(gamePlayer1 -> gamePlayer1.getSalvoes()
                         .stream()
+                        .sorted(Comparator.comparing(Salvo::getTurn))
                         .map(salvo -> salvo.makeSalvoDTO()))
                 .collect(Collectors.toList())
         );
@@ -118,9 +115,9 @@ public class GamePlayer {
     return dto;
 
     }
+*/
 
-
-    public String getGameState(GamePlayer opponent){
+   /* private String getGameState(GamePlayer opponent){
         if(this.getShips().size() == 0){
            return "PLACE SHIPS";
         }
@@ -142,22 +139,30 @@ public class GamePlayer {
         Boolean iWin = mySalvos.containsAll(oppShips);
         Boolean oppWins = oppSalvos.containsAll(myShips);
 
-        if (mySalvos.size() == oppSalvos.size()){
-            if(iWin && oppWins){
-            return "TIE";
+        if (mySalvos.size() == oppSalvos.size()) {
+            Game game = this.getGame();
+            Player player = this.getPlayer();
+
+            if (iWin && oppWins) {
+                *//*Score score = new Score(0.5, game, player);
+               scoreRepository.save(score);*//*
+                return "TIE";
+            }
+
+            if (oppWins) {
+                *//*Score score = new Score(0, game, player);
+                scoreRepository.save(score);*//*
+                return "GAME OVER";
+            }
+
+            if (iWin) {
+               *//* Score score = new Score(1, game, player);
+                scoreRepository.save(score);*//*
+                return "GAME WON";
             }
         }
-
-        if (oppWins){
-            return "GAME OVER";
-        }
-
-        if (iWin){
-            return "GAME WON";
-        }
-
         return oppSalvos.toString();
-    }
+    }*/
     public GamePlayer GetOpponent(){
         return this.getGame().getGamePlayers()
                 .stream()
@@ -172,7 +177,9 @@ public class GamePlayer {
         return dto;
     }
 
-    private List<Map<String, Object>> getHits(GamePlayer self,
+
+
+    public List<Map<String, Object>> getHits(GamePlayer self,
                               GamePlayer opponent){
 
         //Crear una lista de maps llamada dto

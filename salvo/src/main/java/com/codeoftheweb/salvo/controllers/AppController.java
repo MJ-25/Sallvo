@@ -263,19 +263,26 @@ private Map<String,Object> mapaDePlayers(Player n){
 
             if (iWin && oppWins) {
                 Score score = new Score(0.5, game, player);
+                if(!existScore(score, game)) {
                 scoreRepository.save(score);
+                }
                 return "TIE";
             }
 
             if (oppWins) {
                 Score score = new Score(0, game, player);
+                if(!existScore(score, game)) {
                 scoreRepository.save(score);
+                }
                 return "LOST";
             }
 
             if (iWin) {
                 Score score = new Score(1, game, player);
+                if(!existScore(score, game)) {
                 scoreRepository.save(score);
+                }
+
                 return "WON";
             }
         }
@@ -307,6 +314,17 @@ private Map<String,Object> mapaDePlayers(Player n){
                 .findFirst().orElse(new GamePlayer());
     }
 
+
+
+    public  Boolean existScore(Score score, Game game){
+        Set<Score> scores = game.getScores();
+        for(Score s : scores){
+            if(score.getPlayer().getUserName().equals(s.getPlayer().getUserName())){
+                return true;
+            }
+        }
+        return false;
+    }
 
 
 

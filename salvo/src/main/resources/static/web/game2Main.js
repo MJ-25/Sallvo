@@ -1,6 +1,5 @@
 $(function () {
   loadData();
-  loadDataDos();
   $("#logout-btn").click(function () {
     logout(event);
   });
@@ -274,7 +273,7 @@ function loadData() {
 
       $('#playerInfo').text(playerInfo[0] + '(you) vs ' + playerInfo[1]);
 
-      chequearUsuario(data.player.email);
+      chequearUsuario(playerInfo[0]);
 
       isThereAShip = data.ships[0];
       howManyShips = data.ships.length;
@@ -328,6 +327,7 @@ function loadData() {
         var width = 0;
         var height = 0;
         var type = "";
+
         //Function to addWidget (ship) to grid taking into account the ships from repository
         data.ships.forEach(function (ship) {
           arrayEjeX = [];
@@ -402,36 +402,30 @@ function loadData() {
       document.getElementById("tableSunkShips").innerHTML = createTableSunkShips(gamesData.hits.self);
       document.getElementById("tableSunkShipsOpponent").innerHTML = createTableSunkShips(gamesData.hits.opponent);
       if (gamesData.gameState == "TIE") {
-        window.alert("It's a tie")
-        window.location.replace("http://localhost:8080/web/games2.html");
+        if (window.confirm("It's a tie! If you want to stay in this page, press 'Accept'. If not, press cancel to go back to all the games")){
+         $("#saveSalvos").hide();
+        }else{
+         window.location.replace("http://localhost:8080/web/games2.html");
+        }
       }
       if (gamesData.gameState == "LOST") {
-        window.alert("You have lost!!")
-        window.location.replace("http://localhost:8080/web/games2.html");
+        if (window.confirm("You have lost! If you want to stay in this page, press 'Accept'. If not, press cancel to go back to all the games")){
+            $("#saveSalvos").hide();
+        }else{
+           window.location.replace("http://localhost:8080/web/games2.html");
+        }
       } else if (gamesData.gameState == "WON") {
-        window.alert("You have won!!")
-        window.location.replace("http://localhost:8080/web/games2.html");
+        if (window.confirm("You have won!! If you want to stay in this page, press 'Accept'. If not, press cancel to go back to all the games")){
+          $("#saveSalvos").hide();
+        }else{
+          window.location.replace("http://localhost:8080/web/games2.html");
+        }
       }
     })
     .fail(function (jqXHR, textStatus) {
       alert("Failed: " + textStatus);
     });
 };
-
-/*//Function to
-function loadDataDos() {
-  fetch("/api/games").then(function (response) {
-      if (response.ok) {
-        return response.json();
-      }
-    }).then(function (json) {
-      console.log(json);
-      chequearUsuario(json.player.email);
-    })
-    .catch(function (error) {
-      console.log("Request failed: " + error.status);
-    });
-}*/
 
 //Función para que cuando actualice la página no vuelva a aparecer el log in si el usuario ya está loggeado
 function chequearUsuario(usuario) {
@@ -549,9 +543,6 @@ function addShip() {
       dataType: "text",
       contentType: "application/json"
     })
-    /*.done(function(){
-    saveSalvos();
-    })*/
     .done(function (response, status, jqXHR) {
 
       alert("Ships added: " + response);

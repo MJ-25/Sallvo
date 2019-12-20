@@ -37,6 +37,7 @@ function loadData() {
       if (playerId != undefined) {
         $("#newGame").show();
       }
+      setInterval(function(){ window.location.reload();}, 10000);
     })
     .catch(function (error) {
       console.log("Request failed: " + error.message);

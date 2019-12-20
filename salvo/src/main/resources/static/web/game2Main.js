@@ -372,6 +372,8 @@ function loadData() {
 
             //If there are salvos, show the salvos fired to you, the salvos you fired and which salvo has hit a target
           } else if (salvoFired.player == playerIdOpponent) {
+          if(gamesData.gameState == "Place ships"){}
+          else{
             salvoFired.locations.forEach(function (salvoFiredLocations) {
               var loc1 = salvoFiredLocations.charCodeAt(0) - 65;
               var loc2 = parseInt(salvoFiredLocations.substring(1) - 1);
@@ -383,7 +385,7 @@ function loadData() {
               }
 
             })
-          }
+          }}
         })
 
       } else {
@@ -401,6 +403,9 @@ function loadData() {
       $("#state").text(gamesData.gameState);
       document.getElementById("tableSunkShips").innerHTML = createTableSunkShips(gamesData.hits.self);
       document.getElementById("tableSunkShipsOpponent").innerHTML = createTableSunkShips(gamesData.hits.opponent);
+      if(gamesData.gameState == "Wait for your opponent"){
+      setInterval(function(){ window.location.reload();}, 10000);
+      }
       if (gamesData.gameState == "TIE") {
         if (window.confirm("It's a tie! If you want to stay in this page, press 'Accept'. If not, press cancel to go back to all the games")){
          $("#saveSalvos").hide();

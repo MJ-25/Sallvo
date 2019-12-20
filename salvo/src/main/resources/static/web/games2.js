@@ -85,8 +85,6 @@ function createButtonRejoinGame(game) {
 //Function to create a button to join for the first time the game
 function createButtonJoinGame(game) {
   if (playerId != undefined && game.gamePlayers.length < 2 && game.gamePlayers[0].player.idPlayer != playerId) {
-    console.log("menos de dos gp");
-    console.log("id de game: " + game.idGame);
     buttonJoinGame = "<div class='right-align'><button class='joinGame joinGameButton waves-effect red darken-4 btn-small' onclick='post(" + game.idGame + ")'> Join game! </button> </div>";
     return buttonJoinGame;
   } else {
@@ -97,12 +95,8 @@ function createButtonJoinGame(game) {
 
 //Function to post the new gamePlayer to the game and then go to the page to play the game
 function post(idGame) {
-  console.log("Function post. IdGame: " + idGame);
-  console.log(jason);
   $.post("/api/games/" + idGame + "/players")
     .done(function (data) {
-      console.log("idGame 2: " + idGame);
-      console.log("idGame 2: " + data);
       window.location.href = "http://localhost:8080/web/game2.html?gp=" + data.gpid;
     })
     .fail(function (error) {
@@ -120,7 +114,6 @@ fetch("/api/leaderBoard").then(function (response) {
     }
   }).then(function (json) {
     document.getElementById("bodyLeaderBoard").innerHTML = json.map(tableBody).join("");
-    console.log(json);
     $("#blankField").hide();
     $("#wrongInfo").hide();
     $("#usedUser").hide();
@@ -146,13 +139,11 @@ function tableBody(e) {
 function login(evt) {
   evt.preventDefault();
   var form = evt.target.form;
-  console.log(form)
   $.post("/api/login", {
       name: form["name"].value,
       password: form["password"].value
     })
     .done(function (data) {
-      console.log("successful login!!");
       showLogin(false);
       loadData();
     })
@@ -170,19 +161,16 @@ function login(evt) {
 function signin(evt) {
   evt.preventDefault();
   var form = evt.target.form;
-  console.log(form)
   $.post("/api/players", {
       email: form["name"].value,
       password: form["password"].value
     })
     .done(function (data) {
-      console.log("successful sign in!!");
       $.post("/api/login", {
           name: form["name"].value,
           password: form["password"].value
         })
         .done(function (data) {
-          console.log("successful login!!");
           showLogin(false);
           loadData();
         })
@@ -217,7 +205,6 @@ function logout(evt) {
   evt.preventDefault();
   $.post("/api/logout")
     .done(function (data) {
-      console.log("successful logout!!"),
         showLogin(true);
       window.location.reload()
     })
@@ -230,11 +217,9 @@ function newGame(event) {
   event.preventDefault();
   $.post("/api/games")
     .done(function () {
-      console.log("game created");
       window.location.reload()
     })
     .fail(function () {
-      console.log("game creation failed");
     });
 }
 //Función para que una vez hecho el log in desaparezca el form para hacer log in y aparezca el de log out

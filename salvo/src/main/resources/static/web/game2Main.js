@@ -152,7 +152,6 @@ const rotateShips = function (shipType, cells) {
 
   $(`#${shipType}`).click(function () {
     document.getElementById("alert-text").innerHTML = `Rotaste: ${shipType}`
-    console.log($(this))
     //Establecemos nuevos atributos para el widget/barco que giramos
     let x = +($(this).attr('data-gs-x'))
     let y = +($(this).attr('data-gs-y'))
@@ -285,7 +284,6 @@ function loadData() {
         $("#saveShips").show();
         $("#saveSalvos").hide();
         $(".grid-salvos").hide();
-        console.log("There are no ships: " + isThereAShip);
         grid.addWidget($('<div id="patrol_boat"><div class="grid-stack-item-content patrol_boatHorizontal"></div><div/>'),
           0, 1, 2, 1);
 
@@ -316,7 +314,6 @@ function loadData() {
 
         listenBusyCells('ships')
         $('.grid-stack').on('change', () => listenBusyCells('ships'))
-        console.log("There are ships: " + isThereAShip);
         $("#saveShips").hide();
         $(".grid-salvos").show();
         $("#saveSalvos").show();
@@ -388,10 +385,6 @@ function loadData() {
           }}
         })
 
-      } else {
-        console.log("No hay salvos");
-      }
-
       gamesData.hits.opponent.map(e => e.hitLocations.forEach(function (salvoFiredLocations) {
         var loc1 = salvoFiredLocations.charCodeAt(0) - 65;
         var loc2 = parseInt(salvoFiredLocations.substring(1) - 1);
@@ -444,7 +437,6 @@ function logout(evt) {
   evt.preventDefault();
   $.post("/api/logout")
     .done(function (data) {
-      console.log("successful logout!!")
       //Redirecciona a la página principal luego de hacer log out
       window.location.replace("http://localhost:8080/web/games2.html");
     })
@@ -490,8 +482,6 @@ function saveSalvos() {
     var locationConverted = String.fromCharCode(parseInt(locations[0]) + 65) + (parseInt(locations[1]) + 1);
     salvoPositions.push(locationConverted);
   })
-
-  console.log("Salvo positions: " + salvoPositions + " and turn: " + turn);
 
   $.post({
       url: "/api/games/players/" + getParameterByName('gp') + "/salvos",
@@ -541,7 +531,6 @@ function addShip() {
   var battleship = obtenerPosicion("battleship")
   var submarine = obtenerPosicion("submarine")
   var destroyer = obtenerPosicion("destroyer")
-  console.log(carrier);
   $.post({
       url: "/api/games/players/" + getParameterByName('gp') + "/ships",
       data: JSON.stringify([carrier, patrol, battleship, submarine, destroyer]),
@@ -560,9 +549,7 @@ function addShip() {
 
 //Function to create the table that shows which ships have been hit/sunk
 function createTableSunkShips(data) {
-  console.log(data);
   data = data.sort(sortTable);
-  console.log(data);
   var tabla = data.map(makeTable);
 
   return tabla;
